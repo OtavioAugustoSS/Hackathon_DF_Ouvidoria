@@ -1,27 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChannelSelection from './components/ChannelSelection';
 import ReportForm from './components/ReportForm';
 import LoginScreen from './components/LoginScreen';
+import TransparencyPage from './components/TransparencyPage';
+import ServicesPage from './components/ServicesPage';
+import HelpPage from './components/HelpPage';
+import ReportsPage from './components/ReportsPage';
+import OpenDataPage from './components/OpenDataPage';
+import ServiceCharterPage from './components/ServiceCharterPage';
+import HowItWorksPage from './components/HowItWorksPage';
+import AccessibilityPage from './components/AccessibilityPage';
 import { TipoManifestacao, Channel } from './types';
 
-type ViewState = 'HOME' | 'CHANNEL_SELECTION' | 'REPORT_FORM' | 'LOGIN';
+type ViewState = 'HOME' | 'CHANNEL_SELECTION' | 'REPORT_FORM' | 'LOGIN' | 'TRANSPARENCY' | 'SERVICES' | 'HELP' | 'REPORTS' | 'OPEN_DATA' | 'SERVICE_CHARTER' | 'HOW_IT_WORKS' | 'ACCESSIBILITY';
 
 function App() {
   const [view, setView] = useState<ViewState>('HOME');
+  const [highContrast, setHighContrast] = useState(false);
+  const [fontSize, setFontSize] = useState(100);
   const [selectedType, setSelectedType] = useState<TipoManifestacao | undefined>(undefined);
   const [selectedChannel, setSelectedChannel] = useState<Channel | undefined>(undefined);
+  const [searchProtocol, setSearchProtocol] = useState('');
 
-  // Called when user clicks a card on Home or "Registrar Manifestação"
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontSize}%`;
+  }, [fontSize]);
+
   const handleStartManifestation = (type?: TipoManifestacao) => {
     setSelectedType(type);
     setView('CHANNEL_SELECTION');
     window.scrollTo(0, 0);
   };
 
-  // Called when user selects a channel (Text, Audio, etc.)
   const handleChannelSelect = (channel: Channel) => {
     setSelectedChannel(channel);
-    setView('REPORT_FORM'); // Now goes to Form instead of Modal
+    setView('REPORT_FORM');
     window.scrollTo(0, 0);
   };
 
@@ -37,12 +50,64 @@ function App() {
     window.scrollTo(0, 0);
   };
 
+  const handleTransparency = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setView('TRANSPARENCY');
+    window.scrollTo(0, 0);
+  };
+
+  const handleServices = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setView('SERVICES');
+    window.scrollTo(0, 0);
+  };
+
+  const handleHelp = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setView('HELP');
+    window.scrollTo(0, 0);
+  };
+
+  const handleReports = () => {
+    setView('REPORTS');
+    window.scrollTo(0, 0);
+  };
+
+  const handleOpenData = () => {
+    setView('OPEN_DATA');
+    window.scrollTo(0, 0);
+  };
+
+  const handleServiceCharter = () => {
+    setView('SERVICE_CHARTER');
+    window.scrollTo(0, 0);
+  };
+
+  const handleBackToTransparency = () => {
+    setView('TRANSPARENCY');
+    window.scrollTo(0, 0);
+  };
+
+  const handleHowItWorks = () => {
+    setView('HOW_IT_WORKS');
+    window.scrollTo(0, 0);
+  };
+
+  const handleAccessibility = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setView('ACCESSIBILITY');
+    window.scrollTo(0, 0);
+  };
+
+  const toggleHighContrast = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setHighContrast(!highContrast);
+  };
+
   const handleBackToChannel = () => {
     setView('CHANNEL_SELECTION');
     window.scrollTo(0, 0);
-  }
-
-  const [searchProtocol, setSearchProtocol] = useState('');
+  };
 
   const handleConsultar = () => {
     if (!searchProtocol.trim()) {
@@ -57,8 +122,18 @@ function App() {
     alert("Funcionalidade disponível na versão completa.");
   };
 
+  const increaseFontSize = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setFontSize(prev => Math.min(prev + 10, 150));
+  };
+
+  const decreaseFontSize = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    setFontSize(prev => Math.max(prev - 10, 80));
+  };
+
   return (
-    <>
+    <div className={highContrast ? 'high-contrast' : ''}>
       <header className="bg-white shadow-sm sticky top-0 z-40">
         {/* Accessibility Bar */}
         <div className="bg-primary text-white text-xs py-2 px-4 border-b border-primary-dark">
@@ -66,15 +141,25 @@ function App() {
             <div className="flex gap-4">
               <span className="opacity-80">Governo do Distrito Federal</span>
             </div>
-            <div className="flex gap-6 font-medium">
-              <a className="hover:underline opacity-90 hover:opacity-100 flex items-center gap-1" href="#">
-                <span className="material-symbols-outlined text-[16px]">visibility</span> Acessibilidade
-              </a>
-              <a className="hover:underline opacity-90 hover:opacity-100 flex items-center gap-1" href="#">
+            <div className="flex gap-6 font-medium items-center">
+              <div className="flex items-center bg-white/10 rounded-lg overflow-hidden border border-white/20 mr-2">
+                <button
+                  onClick={decreaseFontSize}
+                  className="px-3 py-1 hover:bg-white/20 transition-colors border-r border-white/20 font-bold"
+                  title="Diminuir fonte"
+                >
+                  A-
+                </button>
+                <button
+                  onClick={increaseFontSize}
+                  className="px-3 py-1 hover:bg-white/20 transition-colors font-bold"
+                  title="Aumentar fonte"
+                >
+                  A+
+                </button>
+              </div>
+              <a className="hover:underline opacity-90 hover:opacity-100 flex items-center gap-1 cursor-pointer" onClick={toggleHighContrast}>
                 <span className="material-symbols-outlined text-[16px]">contrast</span> Alto Contraste
-              </a>
-              <a className="hover:underline opacity-90 hover:opacity-100 flex items-center gap-1" href="#">
-                <span className="material-symbols-outlined text-[16px]">translate</span> V-Libras
               </a>
             </div>
           </div>
@@ -95,10 +180,10 @@ function App() {
               </div>
             </div>
             <nav className="hidden md:flex gap-8 items-center text-sm font-medium text-gray-700">
-              <a className="hover:text-primary transition-colors" href="#" onClick={handleBackToHome}>Início</a>
-              <a className="hover:text-primary transition-colors" href="#" onClick={handleFeatureNotAvailable}>Transparência</a>
-              <a className="hover:text-primary transition-colors" href="#" onClick={handleFeatureNotAvailable}>Serviços</a>
-              <a className="hover:text-primary transition-colors" href="#" onClick={handleFeatureNotAvailable}>Ajuda</a>
+              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleBackToHome}>Início</a>
+              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleTransparency}>Transparência</a>
+              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleServices}>Serviços</a>
+              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleHelp}>Ajuda</a>
             </nav>
             <div className="flex gap-3">
               <button
@@ -143,7 +228,7 @@ function App() {
                     >
                       Registrar Manifestação
                     </button>
-                    <button onClick={handleFeatureNotAvailable} className="flex items-center justify-center h-12 px-8 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-primary text-base font-bold rounded-lg transition-all w-full sm:w-auto">
+                    <button onClick={handleHowItWorks} className="flex items-center justify-center h-12 px-8 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-primary text-base font-bold rounded-lg transition-all w-full sm:w-auto">
                       Saiba como funciona
                     </button>
                   </div>
@@ -289,6 +374,43 @@ function App() {
         <LoginScreen onBack={handleBackToHome} />
       )}
 
+      {view === 'TRANSPARENCY' && (
+        <TransparencyPage
+          onBack={handleBackToHome}
+          onGoToReports={handleReports}
+          onGoToOpenData={handleOpenData}
+          onGoToServiceCharter={handleServiceCharter}
+        />
+      )}
+
+      {view === 'SERVICES' && (
+        <ServicesPage onBack={handleBackToHome} />
+      )}
+
+      {view === 'HELP' && (
+        <HelpPage onBack={handleBackToHome} />
+      )}
+
+      {view === 'REPORTS' && (
+        <ReportsPage onBack={handleBackToTransparency} />
+      )}
+
+      {view === 'OPEN_DATA' && (
+        <OpenDataPage onBack={handleBackToTransparency} />
+      )}
+
+      {view === 'SERVICE_CHARTER' && (
+        <ServiceCharterPage onBack={handleBackToTransparency} />
+      )}
+
+      {view === 'HOW_IT_WORKS' && (
+        <HowItWorksPage onBack={handleBackToHome} onStartManifestation={() => handleStartManifestation()} />
+      )}
+
+      {view === 'ACCESSIBILITY' && (
+        <AccessibilityPage onBack={handleBackToHome} />
+      )}
+
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 pt-16 pb-8">
         <div className="layout-container max-w-7xl mx-auto px-4 md:px-8">
@@ -301,29 +423,21 @@ function App() {
               <p className="text-gray-500 max-w-sm mb-6">
                 O canal oficial de comunicação entre o cidadão e o Governo do Distrito Federal. Sua participação é fundamental para a construção de políticas públicas mais eficientes.
               </p>
-              <div className="flex gap-4">
-                <a className="size-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white transition-colors" href="#">
-                  <span className="material-symbols-outlined text-[20px]">mail</span>
-                </a>
-                <a className="size-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white transition-colors" href="#">
-                  <span className="material-symbols-outlined text-[20px]">share</span>
-                </a>
-              </div>
             </div>
             <div>
               <h4 className="font-bold text-gray-900 mb-6">Serviços</h4>
               <ul className="flex flex-col gap-3 text-gray-600 text-sm">
-                <li><a className="hover:text-primary" href="#">Registrar Manifestação</a></li>
-                <li><a className="hover:text-primary" href="#">Acompanhar Protocolo</a></li>
-                <li><a className="hover:text-primary" href="#">Painel da Transparência</a></li>
-                <li><a className="hover:text-primary" href="#">Carta de Serviços</a></li>
+                <li><a className="hover:text-primary cursor-pointer" onClick={() => handleStartManifestation()}>Registrar Manifestação</a></li>
+                <li><a className="hover:text-primary cursor-pointer" onClick={handleBackToHome}>Acompanhar Protocolo</a></li>
+                <li><a className="hover:text-primary cursor-pointer" onClick={handleTransparency}>Painel da Transparência</a></li>
+                <li><a className="hover:text-primary cursor-pointer" onClick={handleServiceCharter}>Carta de Serviços</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold text-gray-900 mb-6">Ajuda & Suporte</h4>
               <ul className="flex flex-col gap-3 text-gray-600 text-sm">
-                <li><a className="hover:text-primary" href="#">Perguntas Frequentes</a></li>
-                <li><a className="hover:text-primary" href="#">Manual do Usuário</a></li>
+                <li><a className="hover:text-primary cursor-pointer" onClick={handleHelp}>Perguntas Frequentes</a></li>
+                <li><a className="hover:text-primary cursor-pointer" onClick={handleHowItWorks}>Manual do Usuário</a></li>
                 <li><a className="hover:text-primary" href="#">Política de Privacidade</a></li>
                 <li><a className="hover:text-primary" href="#">Termos de Uso</a></li>
               </ul>
@@ -337,7 +451,7 @@ function App() {
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
 
