@@ -48,6 +48,15 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         };
     }, [videoPreview]);
 
+    // Cleanup video stream on unmount
+    React.useEffect(() => {
+        return () => {
+            if (videoStreamRef.current) {
+                videoStreamRef.current.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, []);
+
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -58,8 +67,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             const selectedFile = e.target.files[0];
             setFile(selectedFile);
 
-            // Create preview if video
-            if (selectedFile.type.startsWith('video/')) {
+            // Create preview if video or audio
+            if (selectedFile.type.startsWith('video/') || selectedFile.type.startsWith('audio/')) {
                 const url = URL.createObjectURL(selectedFile);
                 setVideoPreview(url);
             } else {
@@ -67,6 +76,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             }
         }
     };
+
+    // Video Recording State
+    const [isVideoCameraOpen, setIsVideoCameraOpen] = useState(false);
+    const videoStreamRef = useRef<MediaStream | null>(null);
+    const videoChunksRef = useRef<Blob[]>([]);
+    const liveVideoRef = useRef<HTMLVideoElement | null>(null);
 
     // Audio Recording Logic
     const startRecording = async () => {
@@ -86,7 +101,10 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                 const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
                 const audioFile = new File([audioBlob], "gravacao_audio.webm", { type: 'audio/webm' });
                 setFile(audioFile);
-                setVideoPreview(null); // Clear video preview if audio recorded
+
+                // Construct preview URL for audio playback
+                const audioUrl = URL.createObjectURL(audioBlob);
+                setVideoPreview(audioUrl);
 
                 // Stop all tracks
                 stream.getTracks().forEach(track => track.stop());
@@ -101,6 +119,74 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
     };
 
     const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    // Video Recording Logic
+    const startCamera = async () => {
+        try {
+            setIsVideoCameraOpen(true);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            videoStreamRef.current = stream;
+
+            // Allow time for modal/dom to render video element
+            setTimeout(() => {
+                if (liveVideoRef.current) {
+                    liveVideoRef.current.srcObject = stream;
+                }
+            }, 100);
+
+        } catch (err) {
+            console.error("Error accessing camera:", err);
+            alert("Não foi possível acessar a câmera. Verifique as permissões.");
+            setIsVideoCameraOpen(false);
+        }
+    };
+
+    const stopCamera = () => {
+        if (videoStreamRef.current) {
+            videoStreamRef.current.getTracks().forEach(track => track.stop());
+            videoStreamRef.current = null;
+        }
+        setIsVideoCameraOpen(false);
+        setIsRecording(false);
+    };
+
+    const startVideoRecording = () => {
+        if (!videoStreamRef.current) return;
+
+        const mediaRecorder = new MediaRecorder(videoStreamRef.current);
+        mediaRecorderRef.current = mediaRecorder;
+        videoChunksRef.current = []; // Use distinct ref for video chunks
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                videoChunksRef.current.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = () => {
+            const videoBlob = new Blob(videoChunksRef.current, { type: 'video/webm' }); // Chrome default
+            const videoFile = new File([videoBlob], "gravacao_video.webm", { type: 'video/webm' });
+
+            setFile(videoFile);
+
+            // Create preview
+            const videoUrl = URL.createObjectURL(videoBlob);
+            setVideoPreview(videoUrl);
+
+            // Close camera mode since we have the file now
+            stopCamera();
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true);
+    };
+
+    const stopVideoRecording = () => {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
             setIsRecording(false);
@@ -246,12 +332,163 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
                     )}
 
-                    {/* 3. Report Details */}
+                    {/* 3. Report Details & Attachments - Context Aware */}
                     <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
                         <div className="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
-                            <span className="material-symbols-outlined text-primary">description</span>
-                            <h3 className="text-lg font-bold text-gray-900">Detalhes da Manifestação</h3>
+                            <span className="material-symbols-outlined text-primary">
+                                {initialChannel === 'TEXT' ? 'description' :
+                                    initialChannel === 'AUDIO' ? 'mic' :
+                                        initialChannel === 'VIDEO' ? 'videocam' : 'attach_file'}
+                            </span>
+                            <h3 className="text-lg font-bold text-gray-900">
+                                {initialChannel === 'TEXT' ? 'Conteúdo da Manifestação' : 'Conteúdo e Anexos'}
+                            </h3>
                         </div>
+
+                        {/* Layout Shift: If Media, show Media FIRST. If Text, show Text FIRST. */}
+
+                        {(initialChannel === 'AUDIO' || initialChannel === 'VIDEO' || initialChannel === 'UPLOAD') && (
+                            <div className="mb-8">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    {initialChannel === 'AUDIO' && 'Grave seu relato'}
+                                    {initialChannel === 'VIDEO' && 'Grave seu vídeo'}
+                                    {initialChannel === 'UPLOAD' && 'Selecione o arquivo'}
+                                </label>
+
+                                {file ? (
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-lg">
+                                            <div className="flex items-center gap-3">
+                                                <span className="material-symbols-outlined text-primary">description</span>
+                                                <div>
+                                                    <p className="text-sm font-bold text-gray-900">Arquivo selecionado</p>
+                                                    <p className="text-xs text-gray-600">{file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                                                </div>
+                                            </div>
+                                            <button type="button" onClick={() => { setFile(null); setVideoPreview(null); }} aria-label="Remover arquivo" className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
+                                                <span className="material-symbols-outlined">delete</span>
+                                            </button>
+                                        </div>
+                                        {videoPreview && file.type.startsWith('video/') && (
+                                            <video src={videoPreview} controls className="w-full h-48 rounded-lg mt-2 object-contain bg-black" />
+                                        )}
+                                        {videoPreview && file.type.startsWith('audio/') && (
+                                            <audio src={videoPreview} controls className="w-full mt-2" />
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="w-full">
+                                        {/* AUDIO ONLY */}
+                                        {initialChannel === 'AUDIO' && (
+                                            <button
+                                                type="button"
+                                                onClick={isRecording ? stopRecording : startRecording}
+                                                aria-label={isRecording ? "Parar gravação" : "Iniciar gravação de áudio"}
+                                                className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isRecording ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}
+                                            >
+                                                {isRecording ? (
+                                                    <>
+                                                        <span className="animate-pulse size-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+                                                            <span className="material-symbols-outlined text-2xl">stop</span>
+                                                        </span>
+                                                        <span className="text-sm font-bold text-red-600">Parar Gravação</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                            <span className="material-symbols-outlined text-2xl">mic</span>
+                                                        </div>
+                                                        <span className="text-sm font-medium text-gray-700">Gravar Áudio</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        )}
+
+                                        {/* VIDEO ONLY - DUAL OPTIONS */}
+                                        {initialChannel === 'VIDEO' && (
+                                            <div className="w-full">
+                                                {!isVideoCameraOpen ? (
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                        {/* Option 1: Record Now */}
+                                                        <button
+                                                            type="button"
+                                                            onClick={startCamera}
+                                                            className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all"
+                                                        >
+                                                            <div className="size-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center">
+                                                                <span className="material-symbols-outlined text-2xl">videocam</span>
+                                                            </div>
+                                                            <span className="text-sm font-medium text-gray-700">Gravar Agora</span>
+                                                        </button>
+
+                                                        {/* Option 2: Gallery / Internal File */}
+                                                        <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
+                                                            <input type="file" accept="video/*" onChange={handleFileChange} className="hidden" />
+                                                            <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                                <span className="material-symbols-outlined text-2xl">folder_open</span>
+                                                            </div>
+                                                            <span className="text-sm font-medium text-gray-700">Galeria / Arquivo</span>
+                                                        </label>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col gap-4">
+                                                        <div className="relative w-full rounded-xl overflow-hidden bg-black aspect-video shadow-sm border border-gray-200">
+                                                            <video ref={liveVideoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
+
+                                                            {isRecording && (
+                                                                <div className="absolute top-4 right-4 flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                                                                    <span className="size-2 bg-white rounded-full"></span>
+                                                                    GRAVANDO
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="flex items-center gap-4">
+                                                            <button
+                                                                type="button"
+                                                                onClick={stopCamera}
+                                                                className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                                                            >
+                                                                Cancelar
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={isRecording ? stopVideoRecording : startVideoRecording}
+                                                                className={`flex-1 py-3 font-bold rounded-xl text-white transition-colors flex items-center justify-center gap-2 ${isRecording ? 'bg-red-600 hover:bg-red-700' : 'bg-primary hover:bg-primary-dark'}`}
+                                                            >
+                                                                {isRecording ? (
+                                                                    <>
+                                                                        <span className="material-symbols-outlined">stop_circle</span>
+                                                                        Parar Gravação
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <span className="material-symbols-outlined">fiber_manual_record</span>
+                                                                        Iniciar Gravação
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* UPLOAD ONLY */}
+                                        {initialChannel === 'UPLOAD' && (
+                                            <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
+                                                <input type="file" accept="image/*,.pdf,.doc,.docx" onChange={handleFileChange} className="hidden" />
+                                                <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                    <span className="material-symbols-outlined text-2xl">add_a_photo</span>
+                                                </div>
+                                                <span className="text-sm font-medium text-gray-700">Escolher Arquivo</span>
+                                            </label>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
@@ -276,18 +513,25 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
 
                         <div className="mb-6">
-                            <label htmlFor="conteudo_texto" className="block text-sm font-semibold text-gray-700 mb-2">Descrição do Ocorrido <span className="text-red-500">*</span></label>
+                            <label htmlFor="conteudo_texto" className="block text-sm font-semibold text-gray-700 mb-2">
+                                {initialChannel === 'TEXT' ? 'Descrição do Ocorrido' : 'Observações Adicionais (Opcional)'}
+                                <span className="text-red-500">*</span>
+                            </label>
                             <textarea
                                 id="conteudo_texto"
                                 name="conteudo_texto"
                                 required
                                 value={formData.conteudo_texto}
                                 onChange={handleInputChange}
-                                rows={6}
+                                rows={initialChannel === 'TEXT' ? 8 : 3}
                                 className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
-                                placeholder="Descreva detalhadamente o que aconteceu, quem estava envolvido e como podemos ajudar..."
+                                placeholder={
+                                    initialChannel === 'TEXT'
+                                        ? "Descreva detalhadamente o que aconteceu, quem estava envolvido e como podemos ajudar..."
+                                        : "Se desejar, adicione detalhes por escrito para complementar seu envio multimídia..."
+                                }
                             ></textarea>
-                            <p className="text-right text-xs text-gray-400 mt-1">Mínimo de detalhes ajuda na investigação.</p>
+                            {initialChannel === 'TEXT' && <p className="text-right text-xs text-gray-400 mt-1">Mínimo de detalhes ajuda na investigação.</p>}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
@@ -302,72 +546,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
                     </div>
 
-                    {/* 4. Attachments (Multichannel) */}
-                    <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-                        <div className="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
-                            <span className="material-symbols-outlined text-primary">attach_file</span>
-                            <h3 className="text-lg font-bold text-gray-900">Evidências e Anexos</h3>
-                        </div>
-
-                        {file ? (
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <span className="material-symbols-outlined text-primary">description</span>
-                                        <div>
-                                            <p className="text-sm font-bold text-gray-900">Arquivo selecionado</p>
-                                            <p className="text-xs text-gray-600">{file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
-                                        </div>
-                                    </div>
-                                    <button type="button" onClick={() => { setFile(null); setVideoPreview(null); }} aria-label="Remover arquivo" className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
-                                        <span className="material-symbols-outlined">delete</span>
-                                    </button>
-                                </div>
-
-                                {videoPreview && (
-                                    <video src={videoPreview} controls className="w-full h-48 rounded-lg mt-2 object-contain bg-black" />
-                                )}
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                {/* Audio Option */}
-                                <div className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isRecording ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}>
-                                    {isRecording ? (
-                                        <>
-                                            <span className="animate-pulse size-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
-                                                <span className="material-symbols-outlined text-2xl">stop</span>
-                                            </span>
-                                            <button type="button" onClick={stopRecording} aria-label="Parar gravação" className="text-sm font-bold text-red-600">Parar Gravação</button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                <span className="material-symbols-outlined text-2xl">mic</span>
-                                            </div>
-                                            <button type="button" onClick={startRecording} aria-label="Iniciar gravação de áudio" className="text-sm font-medium text-gray-700">Gravar Áudio</button>
-                                        </>
-                                    )}
-                                </div>
-
-                                {/* Video Option (Native Camera) */}
-                                <label className="border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
-                                    <input type="file" accept="video/*" capture="environment" onChange={handleFileChange} className="hidden" />
-                                    <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-2xl">videocam</span>
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-700">Gravar Vídeo</span>
-                                </label>
-
-                                {/* Image/File Option */}
-                                <label className="border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
-                                    <input type="file" accept="image/*,.pdf,.doc,.docx" onChange={handleFileChange} className="hidden" />
-                                    <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                        <span className="material-symbols-outlined text-2xl">add_a_photo</span>
-                                    </div>
-                                    <span className="text-sm font-medium text-gray-700">Foto ou Arquivo</span>
-                                </label>
-                            </div>
-                        )}
+                    {/* Old Attachments Section Removed - merged nicely above */}
+                    <div>
                         <p className="text-xs text-gray-400 mt-3 text-center">Formatos aceitos: JPG, PNG, PDF, MP4, MP3, WebM. Max: 20MB.</p>
                     </div>
 
