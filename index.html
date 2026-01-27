@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Participa DF - Sua voz constrói a cidade</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003399",
+                        "primary-dark": "#002266",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#0f1623",
+                        "ice-gray": "#F3F4F6",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .hero-pattern {
+            background-color: #ffffff;
+            background-image: radial-gradient(#003399 0.5px, transparent 0.5px), radial-gradient(#003399 0.5px, #ffffff 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.05;
+        }
+    </style>
+
+    <!-- Import Map -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.4",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "axios": "https://esm.sh/axios@^1.13.3"
+      }
+    }
+    </script>
+</head>
+<body class="flex flex-col min-h-screen bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+</body>
+</html>
