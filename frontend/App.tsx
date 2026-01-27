@@ -42,6 +42,21 @@ function App() {
     window.scrollTo(0, 0);
   }
 
+  const [searchProtocol, setSearchProtocol] = useState('');
+
+  const handleConsultar = () => {
+    if (!searchProtocol.trim()) {
+      alert("Por favor, digite um número de protocolo.");
+      return;
+    }
+    alert(`Consultando protocolo ${searchProtocol}... Status: EM ANÁLISE`);
+  };
+
+  const handleFeatureNotAvailable = (e: React.MouseEvent) => {
+    e.preventDefault();
+    alert("Funcionalidade disponível na versão completa.");
+  };
+
   return (
     <>
       <header className="bg-white shadow-sm sticky top-0 z-40">
@@ -81,13 +96,14 @@ function App() {
             </div>
             <nav className="hidden md:flex gap-8 items-center text-sm font-medium text-gray-700">
               <a className="hover:text-primary transition-colors" href="#" onClick={handleBackToHome}>Início</a>
-              <a className="hover:text-primary transition-colors" href="#">Transparência</a>
-              <a className="hover:text-primary transition-colors" href="#">Serviços</a>
-              <a className="hover:text-primary transition-colors" href="#">Ajuda</a>
+              <a className="hover:text-primary transition-colors" href="#" onClick={handleFeatureNotAvailable}>Transparência</a>
+              <a className="hover:text-primary transition-colors" href="#" onClick={handleFeatureNotAvailable}>Serviços</a>
+              <a className="hover:text-primary transition-colors" href="#" onClick={handleFeatureNotAvailable}>Ajuda</a>
             </nav>
             <div className="flex gap-3">
               <button
                 onClick={handleLogin}
+                aria-label="Entrar na área do cidadão"
                 className="hidden sm:flex items-center justify-center h-10 px-6 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-full transition-all shadow-sm gap-2"
               >
                 <span className="material-symbols-outlined text-[20px]">account_circle</span>
@@ -127,7 +143,7 @@ function App() {
                     >
                       Registrar Manifestação
                     </button>
-                    <button className="flex items-center justify-center h-12 px-8 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-primary text-base font-bold rounded-lg transition-all w-full sm:w-auto">
+                    <button onClick={handleFeatureNotAvailable} className="flex items-center justify-center h-12 px-8 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-primary text-base font-bold rounded-lg transition-all w-full sm:w-auto">
                       Saiba como funciona
                     </button>
                   </div>
@@ -150,9 +166,18 @@ function App() {
               <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-2 md:p-3 border border-gray-100 flex flex-col md:flex-row gap-2">
                 <div className="flex-1 flex items-center bg-gray-50 rounded-lg px-4 h-14 md:h-16 border border-gray-200 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
                   <span className="material-symbols-outlined text-gray-400 text-[24px]">search</span>
-                  <input className="w-full bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base ml-2 outline-none" placeholder="Digite o número do protocolo para acompanhar..." type="text" />
+                  <input
+                    className="w-full bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-base ml-2 outline-none"
+                    placeholder="Digite o número do protocolo para acompanhar..."
+                    type="text"
+                    onChange={(e) => setSearchProtocol(e.target.value)}
+                    value={searchProtocol}
+                  />
                 </div>
-                <button className="h-14 md:h-16 px-8 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+                <button
+                  onClick={handleConsultar}
+                  className="h-14 md:h-16 px-8 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                >
                   <span>Consultar</span>
                   <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
                 </button>

@@ -184,7 +184,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
                 {/* Breadcrumbs */}
                 <nav className="mb-8 flex items-center gap-2 text-sm text-gray-500">
-                    <button onClick={onBack} className="hover:text-primary transition-colors">Início</button>
+                    <button onClick={onBack} aria-label="Voltar para a página inicial" className="hover:text-primary transition-colors">Início</button>
                     <span className="material-symbols-outlined text-sm">chevron_right</span>
                     <span>Ouvidoria</span>
                     <span className="material-symbols-outlined text-sm">chevron_right</span>
@@ -325,9 +325,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                 </div>
 
                                 {videoPreview && (
-                                    <div className="w-full rounded-xl overflow-hidden shadow-sm border border-gray-200">
-                                        <video src={videoPreview} controls className="w-full max-h-[400px] object-contain bg-black" />
-                                    </div>
+                                    <video src={videoPreview} controls className="w-full h-48 rounded-lg mt-2 object-contain bg-black" />
                                 )}
                             </div>
                         ) : (
@@ -339,14 +337,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                             <span className="animate-pulse size-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
                                                 <span className="material-symbols-outlined text-2xl">stop</span>
                                             </span>
-                                            <button type="button" onClick={stopRecording} className="text-sm font-bold text-red-600">Parar Gravação</button>
+                                            <button type="button" onClick={stopRecording} aria-label="Parar gravação" className="text-sm font-bold text-red-600">Parar Gravação</button>
                                         </>
                                     ) : (
                                         <>
                                             <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
                                                 <span className="material-symbols-outlined text-2xl">mic</span>
                                             </div>
-                                            <button type="button" onClick={startRecording} className="text-sm font-medium text-gray-700">Gravar Áudio</button>
+                                            <button type="button" onClick={startRecording} aria-label="Iniciar gravação de áudio" className="text-sm font-medium text-gray-700">Gravar Áudio</button>
                                         </>
                                     )}
                                 </div>

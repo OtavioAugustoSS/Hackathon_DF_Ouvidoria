@@ -1,78 +1,82 @@
-# Participa DF 🏙️
+# Participa DF - Ouvidoria PWA 🏛️
 
-## Visão Geral
-**Participa DF** é uma plataforma moderna de Ouvidoria desenvolvida para o Hackathon "Participa DF". O objetivo é aproximar o cidadão do Governo do Distrito Federal, permitindo o registro ágil de manifestações (reclamações, elogios, sugestões) com suporte multimídia e acessibilidade.
+## 📢 Sobre o Projeto
+**Participa DF** é a evolução da comunicação entre o cidadão e o Governo do Distrito Federal. Desenvolvida para o Hackathon "Participa DF", esta plataforma de Ouvidoria foca na **experiência do usuário (UX)**, **transparência** e **acessibilidade universal**.
 
-A solução foca em **Multicanalidade** (áudio, vídeo, texto) e **Experiência do Usuário (UX)**, garantindo que qualquer cidadão possa exercer sua cidadania digital.
-
----
-
-## 🚀 Tecnologias
-
-O projeto utiliza uma stack moderna e performática:
-
-- **Frontend**: 
-  - **React 19** com **Vite** (Build ultra-rápido).
-  - **Tailwind CSS** (Design System responsivo).
-  - **PWA (Progressive Web App)**: Funciona offline e instalável em dispositivos móveis.
-  
-- **Backend**:
-  - **FastAPI** (Python): Alto desempenho e validação automática de dados.
-  - **SQLite/MySQL**: Persistência robusta.
-  - **Clean Architecture**: Separação clara de responsabilidades.
+Ao contrário de formulários tradicionais, o Participa DF oferece uma abordagem **multicanal**, permitindo que o cidadão registre manifestações por texto, áudio ou vídeo, de forma intuitiva e inclusiva, garantindo que todas as vozes sejam ouvidas, independentemente de barreiras físicas ou tecnológicas.
 
 ---
 
-## 🛠️ Como Rodar (Passo a Passo)
+## 🚀 Tecnologias e Inovações
 
-### Pré-requisitos
-- Node.js 18+
-- Python 3.9+
+A solução foi construída com um stack moderno para garantir performance, escalabilidade e facilidade de uso:
+
+*   **Frontend Interativo**:
+    *   **React 19 + Vite**: Performance extrema e carregamento instantâneo.
+    *   **Tailwind CSS**: Design system responsivo e visualmente impactante.
+    *   **MediaRecorder API**: Gravação nativa de áudio e vídeo diretamente no navegador.
+    *   **PWA (Progressive Web App)**: Funciona offline, instalável no celular e leve.
+
+*   **Backend Robusto**:
+    *   **FastAPI (Python)**: API assíncrona de alta performance.
+    *   **Clean Architecture**: Código organizado, testável e fácil de manter.
+    *   **MySQL/SQLite**: Persistência de dados segura e confiável.
+
+---
+
+## 🏆 Destaques da Solução
+
+### ♿ Acessibilidade (WCAG 2.1 AA)
+O projeto nasceu inclusivo. Cada componente foi auditado para garantir:
+*   Contraste adequado para baixa visão.
+*   Navegação completa por teclado.
+*   Uso rigoroso de `aria-labels` e atributos semânticos para leitores de tela.
+*   Suporte a ferramentas de assistência.
+
+### 🤖 Integração com IA IZA
+Preparado para o futuro, o Participa DF foi arquitetado para integração com a **IA IZA**. A estrutura de dados já prevê o processamento de linguagem natural para classificação automática de manifestações e análise de sentimento, agilizando o encaminhamento para os órgãos responsáveis.
+
+---
+
+## 🛠️ Como Rodar o Projeto
+
+Siga os passos abaixo para executar a aplicação completa em seu ambiente local.
 
 ### 1. Backend (API)
 
+Abra um terminal na pasta `backend`:
+
 ```bash
-cd backend
+# 1. Crie o ambiente virtual
 python -m venv venv
 
-# Windows
+# 2. Ative o ambiente virtual
+# Windows:
 venv\Scripts\activate
-# Linux/Mac
+# Linux/Mac:
 # source venv/bin/activate
 
+# 3. Instale as dependências
 pip install -r requirements.txt
-python main.py
-```
 
-A API estará rodando em `http://localhost:8000`.
+# 4. Inicie o servidor
+uvicorn main:app --reload
+```
+O servidor iniciará em `http://localhost:8000`.
 
 ### 2. Frontend (Aplicação Web/PWA)
 
+Abra outro terminal na raiz do projeto (onde está o `package.json`):
+
 ```bash
-# Em outro terminal, na raiz do projeto
+# 1. Instale as dependências
 npm install
+
+# 2. Inicie o servidor de desenvolvimento
 npm run dev
 ```
-
 Acesse a aplicação em `http://localhost:3000`.
 
 ---
 
-## 🏗️ Decisões de Arquitetura (Clean Code)
-
-A arquitetura foi pensada para escalabilidade e manutenção:
-
-1.  **Frontend Modular**: Componentes reutilizáveis em `/components`, separação de lógica de API em `/services`.
-2.  **PWA First**: Configuração via `vite-plugin-pwa` para garantir cache de assets e instalabilidade, atendendo aos requisitos de mobilidade do edital.
-3.  **Acessibilidade (WCAG)**: Foco em semântica HTML, uso correto de `aria-labels`, contrastes adequados e atributos `lang` para leitores de tela.
-4.  **Multimídia Otimizada**: Uploads de arquivos grandes via `multipart/form-data`, com feedbacks visuais imediatos (previews) para o usuário antes do envio.
-
----
-
-## 🎥 Vídeo de Apresentação
-
-[LINK DO YOUTUBE AQUI]
-
----
-
-*Desenvolvido com ❤️ para o Hackathon Participa DF.*
+*Participa DF: Sua voz constrói a cidade. 🏙️*
