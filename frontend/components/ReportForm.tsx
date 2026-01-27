@@ -36,6 +36,18 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
     // --- Handlers ---
 
+    // Video Preview State
+    const [videoPreview, setVideoPreview] = useState<string | null>(null);
+
+    // Cleanup video preview on unmount or file change
+    React.useEffect(() => {
+        return () => {
+            if (videoPreview) {
+                URL.revokeObjectURL(videoPreview);
+            }
+        };
+    }, [videoPreview]);
+
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -43,7 +55,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0]);
+            const selectedFile = e.target.files[0];
+            setFile(selectedFile);
+
+            // Create preview if video
+            if (selectedFile.type.startsWith('video/')) {
+                const url = URL.createObjectURL(selectedFile);
+                setVideoPreview(url);
+            } else {
+                setVideoPreview(null);
+            }
         }
     };
 
@@ -65,7 +86,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                 const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
                 const audioFile = new File([audioBlob], "gravacao_audio.webm", { type: 'audio/webm' });
                 setFile(audioFile);
-                
+                setVideoPreview(null); // Clear video preview if audio recorded
+
                 // Stop all tracks
                 stream.getTracks().forEach(track => track.stop());
             };
@@ -100,15 +122,15 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
         // Conditional fields
         if (!anonymous) {
-            if(formData.nome) data.append('nome', formData.nome);
-            if(formData.email) data.append('email', formData.email);
-            if(formData.telefone) data.append('telefone', formData.telefone);
-            if(formData.cpf) data.append('cpf', formData.cpf);
+            if (formData.nome) data.append('nome', formData.nome);
+            if (formData.email) data.append('email', formData.email);
+            if (formData.telefone) data.append('telefone', formData.telefone);
+            if (formData.cpf) data.append('cpf', formData.cpf);
         }
 
         // Optional fields
-        if(formData.local_ocorrencia) data.append('local_ocorrencia', formData.local_ocorrencia);
-        if(formData.data_ocorrencia) data.append('data_ocorrencia', formData.data_ocorrencia);
+        if (formData.local_ocorrencia) data.append('local_ocorrencia', formData.local_ocorrencia);
+        if (formData.data_ocorrencia) data.append('data_ocorrencia', formData.data_ocorrencia);
 
         // File
         if (file) {
@@ -139,7 +161,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                     <p className="text-gray-500 mb-8">
                         Sua manifestação foi registrada com sucesso. Utilize o número de protocolo abaixo para acompanhar o andamento.
                     </p>
-                    
+
                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8">
                         <span className="text-sm text-gray-500 uppercase font-bold tracking-wider">Número do Protocolo</span>
                         <div className="text-4xl font-mono font-bold text-primary mt-2 select-all">
@@ -159,7 +181,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
     return (
         <main className="flex-grow bg-[#f8f9fa] py-8 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
             <div className="max-w-[1000px] mx-auto">
-                
+
                 {/* Breadcrumbs */}
                 <nav className="mb-8 flex items-center gap-2 text-sm text-gray-500">
                     <button onClick={onBack} className="hover:text-primary transition-colors">Início</button>
@@ -175,7 +197,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    
+
                     {/* 1. Anonymous Toggle */}
                     <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div className="flex items-start gap-4">
@@ -205,20 +227,20 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="col-span-1 md:col-span-2">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nome Completo <span className="text-red-500">*</span></label>
-                                    <input required type="text" name="nome" value={formData.nome} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Ex: Maria Silva" />
+                                    <label htmlFor="nome" className="block text-sm font-semibold text-gray-700 mb-2">Nome Completo <span className="text-red-500">*</span></label>
+                                    <input required id="nome" type="text" name="nome" value={formData.nome} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Ex: Maria Silva" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">CPF</label>
-                                    <input type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="000.000.000-00" />
+                                    <label htmlFor="cpf" className="block text-sm font-semibold text-gray-700 mb-2">CPF</label>
+                                    <input id="cpf" type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="000.000.000-00" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone</label>
-                                    <input type="tel" name="telefone" value={formData.telefone} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="(61) 90000-0000" />
+                                    <label htmlFor="telefone" className="block text-sm font-semibold text-gray-700 mb-2">Telefone</label>
+                                    <input id="telefone" type="tel" name="telefone" value={formData.telefone} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="(61) 90000-0000" />
                                 </div>
                                 <div className="col-span-1 md:col-span-2">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">E-mail <span className="text-red-500">*</span></label>
-                                    <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="nome@email.com" />
+                                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">E-mail <span className="text-red-500">*</span></label>
+                                    <input required id="email" type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="nome@email.com" />
                                 </div>
                             </div>
                         </div>
@@ -230,17 +252,17 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                             <span className="material-symbols-outlined text-primary">description</span>
                             <h3 className="text-lg font-bold text-gray-900">Detalhes da Manifestação</h3>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Manifestação <span className="text-red-500">*</span></label>
-                                <select name="tipo_manifestacao" value={formData.tipo_manifestacao} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
+                                <label htmlFor="tipo_manifestacao" className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Manifestação <span className="text-red-500">*</span></label>
+                                <select id="tipo_manifestacao" name="tipo_manifestacao" value={formData.tipo_manifestacao} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
                                     {Object.values(TipoManifestacao).map(t => <option key={t} value={t}>{t}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Assunto / Categoria <span className="text-red-500">*</span></label>
-                                <select name="assunto" required value={formData.assunto} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
+                                <label htmlFor="assunto" className="block text-sm font-semibold text-gray-700 mb-2">Assunto / Categoria <span className="text-red-500">*</span></label>
+                                <select id="assunto" name="assunto" required value={formData.assunto} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
                                     <option value="">Selecione...</option>
                                     <option value="Saúde">Saúde</option>
                                     <option value="Educação">Educação</option>
@@ -254,13 +276,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
 
                         <div className="mb-6">
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Descrição do Ocorrido <span className="text-red-500">*</span></label>
-                            <textarea 
-                                name="conteudo_texto" 
+                            <label htmlFor="conteudo_texto" className="block text-sm font-semibold text-gray-700 mb-2">Descrição do Ocorrido <span className="text-red-500">*</span></label>
+                            <textarea
+                                id="conteudo_texto"
+                                name="conteudo_texto"
                                 required
-                                value={formData.conteudo_texto} 
+                                value={formData.conteudo_texto}
                                 onChange={handleInputChange}
-                                rows={6} 
+                                rows={6}
                                 className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
                                 placeholder="Descreva detalhadamente o que aconteceu, quem estava envolvido e como podemos ajudar..."
                             ></textarea>
@@ -269,12 +292,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Local do Fato</label>
-                                <input type="text" name="local_ocorrencia" value={formData.local_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Rua, Bairro ou Ponto de Referência" />
+                                <label htmlFor="local_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Local do Fato</label>
+                                <input id="local_ocorrencia" type="text" name="local_ocorrencia" value={formData.local_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Rua, Bairro ou Ponto de Referência" />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Data do Ocorrido</label>
-                                <input type="date" name="data_ocorrencia" value={formData.data_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" />
+                                <label htmlFor="data_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Data do Ocorrido</label>
+                                <input id="data_ocorrencia" type="date" name="data_ocorrencia" value={formData.data_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" />
                             </div>
                         </div>
                     </div>
@@ -287,17 +310,25 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
 
                         {file ? (
-                            <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                                <div className="flex items-center gap-3">
-                                    <span className="material-symbols-outlined text-primary">description</span>
-                                    <div>
-                                        <p className="text-sm font-bold text-gray-900">Arquivo selecionado</p>
-                                        <p className="text-xs text-gray-600">{file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-100 rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        <span className="material-symbols-outlined text-primary">description</span>
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-900">Arquivo selecionado</p>
+                                            <p className="text-xs text-gray-600">{file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                                        </div>
                                     </div>
+                                    <button type="button" onClick={() => { setFile(null); setVideoPreview(null); }} aria-label="Remover arquivo" className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
+                                        <span className="material-symbols-outlined">delete</span>
+                                    </button>
                                 </div>
-                                <button type="button" onClick={() => setFile(null)} className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
-                                    <span className="material-symbols-outlined">delete</span>
-                                </button>
+
+                                {videoPreview && (
+                                    <div className="w-full rounded-xl overflow-hidden shadow-sm border border-gray-200">
+                                        <video src={videoPreview} controls className="w-full max-h-[400px] object-contain bg-black" />
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
