@@ -12,7 +12,7 @@ import HowItWorksPage from './components/HowItWorksPage';
 import AccessibilityPage from './components/AccessibilityPage';
 import { TipoManifestacao, Channel } from './types';
 
-type ViewState = 'HOME' | 'CHANNEL_SELECTION' | 'REPORT_FORM' | 'LOGIN' | 'TRANSPARENCY' | 'SERVICES' | 'HELP' | 'REPORTS' | 'OPEN_DATA' | 'SERVICE_CHARTER' | 'HOW_IT_WORKS' | 'ACCESSIBILITY';
+type ViewState = 'HOME' | 'TYPE_SELECTION' | 'CHANNEL_SELECTION' | 'REPORT_FORM' | 'LOGIN' | 'TRANSPARENCY' | 'SERVICES' | 'HELP' | 'REPORTS' | 'OPEN_DATA' | 'SERVICE_CHARTER' | 'HOW_IT_WORKS' | 'ACCESSIBILITY';
 
 function App() {
   const [view, setView] = useState<ViewState>('HOME');
@@ -27,8 +27,13 @@ function App() {
   }, [fontSize]);
 
   const handleStartManifestation = (type?: TipoManifestacao) => {
-    setSelectedType(type);
-    setView('CHANNEL_SELECTION');
+    if (type) {
+      setSelectedType(type);
+      setView('CHANNEL_SELECTION');
+    } else {
+      setSelectedType(undefined);
+      setView('TYPE_SELECTION');
+    }
     window.scrollTo(0, 0);
   };
 
@@ -270,68 +275,7 @@ function App() {
             </div>
           </section>
 
-          {/* Services Section */}
-          <section className="bg-background-light py-16 md:py-24">
-            <div className="layout-container max-w-7xl mx-auto px-4 md:px-8">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-                <div className="max-w-2xl">
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-4">Selecione o tipo de manifestação</h2>
-                  <p className="text-gray-600 text-lg">Escolha a opção que melhor descreve sua necessidade para iniciarmos o atendimento com agilidade.</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                {/* Card Denúncia */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.DENUNCIA)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <div className="size-14 rounded-full bg-red-50 text-red-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-[32px]">warning</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Denúncia</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Relate ilícitos ou irregularidades na administração pública para investigação.</p>
-                  <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
-                    Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-                  </div>
-                </div>
-
-                {/* Card Reclamação */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.RECLAMACAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <div className="size-14 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-[32px]">thumb_down</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Reclamação</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Expresse insatisfação com serviços públicos prestados ou atendimento.</p>
-                  <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
-                    Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-                  </div>
-                </div>
-
-                {/* Card Sugestão */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.SUGESTAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <div className="size-14 rounded-full bg-blue-50 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-[32px]">lightbulb</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Sugestão</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Envie ideias e propostas inovadoras para melhorar a nossa cidade.</p>
-                  <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
-                    Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-                  </div>
-                </div>
-
-                {/* Card Elogio */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.ELOGIO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <div className="size-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-[32px]">thumb_up</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Elogio</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Reconheça um bom atendimento ou serviço prestado com excelência.</p>
-                  <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
-                    Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </section>
 
           {/* Metrics Banner */}
           <section className="bg-primary text-white py-12 md:py-16">
@@ -353,6 +297,77 @@ function App() {
             </div>
           </section>
         </>
+      )}
+
+      {view === 'TYPE_SELECTION' && (
+        <section className="bg-background-light py-16 md:py-24 animate-in fade-in duration-500">
+          <div className="layout-container max-w-7xl mx-auto px-4 md:px-8">
+            <div className="flex flex-col gap-6 mb-12">
+              <button
+                onClick={handleBackToHome}
+                className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors font-medium w-fit"
+              >
+                <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+                Voltar
+              </button>
+              <div className="max-w-2xl">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-4">Selecione o tipo de manifestação</h2>
+                <p className="text-gray-600 text-lg">Escolha a opção que melhor descreve sua necessidade para iniciarmos o atendimento com agilidade.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+              {/* Card Denúncia */}
+              <div onClick={() => handleStartManifestation(TipoManifestacao.DENUNCIA)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="size-14 rounded-full bg-red-50 text-red-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-[32px]">warning</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Denúncia</h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Relate ilícitos ou irregularidades na administração pública para investigação.</p>
+                <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
+                  Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+                </div>
+              </div>
+
+              {/* Card Reclamação */}
+              <div onClick={() => handleStartManifestation(TipoManifestacao.RECLAMACAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="size-14 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-[32px]">thumb_down</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Reclamação</h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Expresse insatisfação com serviços públicos prestados ou atendimento.</p>
+                <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
+                  Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+                </div>
+              </div>
+
+              {/* Card Sugestão */}
+              <div onClick={() => handleStartManifestation(TipoManifestacao.SUGESTAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="size-14 rounded-full bg-blue-50 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-[32px]">lightbulb</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Sugestão</h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Envie ideias e propostas inovadoras para melhorar a nossa cidade.</p>
+                <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
+                  Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+                </div>
+              </div>
+
+              {/* Card Elogio */}
+              <div onClick={() => handleStartManifestation(TipoManifestacao.ELOGIO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="size-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-[32px]">thumb_up</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Elogio</h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-grow">Reconheça um bom atendimento ou serviço prestado com excelência.</p>
+                <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
+                  Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
       )}
 
       {view === 'CHANNEL_SELECTION' && (

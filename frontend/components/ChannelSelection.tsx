@@ -10,7 +10,7 @@ const ChannelSelection: React.FC<ChannelSelectionProps> = ({ onBack, onSelectCha
     return (
         <main className="flex-grow flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
             <div className="w-full max-w-[960px] flex flex-col gap-6">
-                
+
                 {/* Breadcrumbs */}
                 <nav aria-label="Breadcrumb">
                     <ol className="flex flex-wrap items-center gap-2">
@@ -42,11 +42,13 @@ const ChannelSelection: React.FC<ChannelSelectionProps> = ({ onBack, onSelectCha
                 {/* Selection Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {/* Card 1: Texto */}
-                    <button onClick={() => onSelectChannel('TEXT')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-left w-full h-full">
+                    <button onClick={() => onSelectChannel('TEXT')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center w-full h-full">
                         <div className="mb-6 p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                             <span className="material-symbols-outlined text-[40px]">description</span>
                         </div>
-                        <h3 className="text-xl font-bold text-[#101318] dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Texto</h3>
+                        <div className="min-h-[3.5rem] flex items-center justify-center mb-2">
+                            <h3 className="text-xl font-bold text-[#101318] dark:text-white group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Texto</h3>
+                        </div>
                         <p className="text-sm text-[#5e6d8d] dark:text-gray-400 text-center leading-relaxed">
                             Descreva a situação detalhadamente por escrito através de formulário.
                         </p>
@@ -54,35 +56,41 @@ const ChannelSelection: React.FC<ChannelSelectionProps> = ({ onBack, onSelectCha
                     </button>
 
                     {/* Card 2: Áudio */}
-                    <button onClick={() => onSelectChannel('AUDIO')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-left w-full h-full">
+                    <button onClick={() => onSelectChannel('AUDIO')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center w-full h-full">
                         <div className="mb-6 p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                             <span className="material-symbols-outlined text-[40px]">mic</span>
                         </div>
-                        <h3 className="text-xl font-bold text-[#101318] dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Gravar Áudio</h3>
+                        <div className="min-h-[3.5rem] flex items-center justify-center mb-2">
+                            <h3 className="text-xl font-bold text-[#101318] dark:text-white group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Relato em Áudio</h3>
+                        </div>
                         <p className="text-sm text-[#5e6d8d] dark:text-gray-400 text-center leading-relaxed">
-                            Grave um relato de voz rápido explicando o ocorrido.
+                            Grave um áudio ou envie um arquivo de voz existente.
                         </p>
                         <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary/10 rounded-2xl pointer-events-none transition-colors"></div>
                     </button>
 
                     {/* Card 3: Vídeo */}
-                    <button onClick={() => onSelectChannel('VIDEO')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-left w-full h-full">
+                    <button onClick={() => onSelectChannel('VIDEO')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center w-full h-full">
                         <div className="mb-6 p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                             <span className="material-symbols-outlined text-[40px]">videocam</span>
                         </div>
-                        <h3 className="text-xl font-bold text-[#101318] dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Gravar Vídeo</h3>
+                        <div className="min-h-[3.5rem] flex items-center justify-center mb-2">
+                            <h3 className="text-xl font-bold text-[#101318] dark:text-white group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Relato em Vídeo</h3>
+                        </div>
                         <p className="text-sm text-[#5e6d8d] dark:text-gray-400 text-center leading-relaxed">
-                            Mostre e explique a situação em tempo real usando sua câmera.
+                            Grave um vídeo ou envie um arquivo de vídeo existente.
                         </p>
                         <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary/10 rounded-2xl pointer-events-none transition-colors"></div>
                     </button>
 
                     {/* Card 4: Upload */}
-                    <button onClick={() => onSelectChannel('UPLOAD')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-left w-full h-full">
+                    <button onClick={() => onSelectChannel('UPLOAD')} className="group relative flex flex-col items-center p-8 bg-white dark:bg-[#1a202c] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer text-center w-full h-full">
                         <div className="mb-6 p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary dark:text-blue-400 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                             <span className="material-symbols-outlined text-[40px]">add_photo_alternate</span>
                         </div>
-                        <h3 className="text-xl font-bold text-[#101318] dark:text-white mb-2 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Upload Imagem</h3>
+                        <div className="min-h-[3.5rem] flex items-center justify-center mb-2">
+                            <h3 className="text-xl font-bold text-[#101318] dark:text-white group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">Upload Imagem</h3>
+                        </div>
                         <p className="text-sm text-[#5e6d8d] dark:text-gray-400 text-center leading-relaxed">
                             Envie fotos ou documentos que você já possui na galeria.
                         </p>

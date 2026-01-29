@@ -378,30 +378,44 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                     </div>
                                 ) : (
                                     <div className="w-full">
-                                        {/* AUDIO ONLY */}
+                                        {/* AUDIO ONLY - DUAL OPTIONS */}
                                         {initialChannel === 'AUDIO' && (
-                                            <button
-                                                type="button"
-                                                onClick={isRecording ? stopRecording : startRecording}
-                                                aria-label={isRecording ? "Parar gravação" : "Iniciar gravação de áudio"}
-                                                className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isRecording ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}
-                                            >
-                                                {isRecording ? (
-                                                    <>
-                                                        <span className="animate-pulse size-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
-                                                            <span className="material-symbols-outlined text-2xl">stop</span>
-                                                        </span>
-                                                        <span className="text-sm font-bold text-red-600">Parar Gravação</span>
-                                                    </>
-                                                ) : (
-                                                    <>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                {/* Option 1: Record Now */}
+                                                <button
+                                                    type="button"
+                                                    onClick={isRecording ? stopRecording : startRecording}
+                                                    aria-label={isRecording ? "Parar gravação" : "Iniciar gravação de áudio"}
+                                                    className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isRecording ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}
+                                                >
+                                                    {isRecording ? (
+                                                        <>
+                                                            <span className="animate-pulse size-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+                                                                <span className="material-symbols-outlined text-2xl">stop</span>
+                                                            </span>
+                                                            <span className="text-sm font-bold text-red-600">Parar Gravação</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                                <span className="material-symbols-outlined text-2xl">mic</span>
+                                                            </div>
+                                                            <span className="text-sm font-medium text-gray-700">Gravar Agora</span>
+                                                        </>
+                                                    )}
+                                                </button>
+
+                                                {/* Option 2: Upload File */}
+                                                {!isRecording && (
+                                                    <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
+                                                        <input type="file" accept="audio/*" onChange={handleFileChange} className="hidden" />
                                                         <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                            <span className="material-symbols-outlined text-2xl">mic</span>
+                                                            <span className="material-symbols-outlined text-2xl">folder_open</span>
                                                         </div>
-                                                        <span className="text-sm font-medium text-gray-700">Gravar Áudio</span>
-                                                    </>
+                                                        <span className="text-sm font-medium text-gray-700">Selecionar Arquivo</span>
+                                                    </label>
                                                 )}
-                                            </button>
+                                            </div>
                                         )}
 
                                         {/* VIDEO ONLY - DUAL OPTIONS */}
@@ -546,7 +560,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
                     </div>
 
-                    {/* Old Attachments Section Removed - merged nicely above */}
+                    { }
                     <div>
                         <p className="text-xs text-gray-400 mt-3 text-center">Formatos aceitos: JPG, PNG, PDF, MP4, MP3, WebM. Max: 20MB.</p>
                     </div>
