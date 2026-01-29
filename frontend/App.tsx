@@ -10,9 +10,12 @@ import OpenDataPage from './components/OpenDataPage';
 import ServiceCharterPage from './components/ServiceCharterPage';
 import HowItWorksPage from './components/HowItWorksPage';
 import AccessibilityPage from './components/AccessibilityPage';
+import AdminDashboard from './components/AdminDashboard';
 import { TipoManifestacao, Channel } from './types';
+import { User, userStore, Manifestation } from './services/userStore';
+import Toast, { ToastType } from './components/Toast';
 
-type ViewState = 'HOME' | 'TYPE_SELECTION' | 'CHANNEL_SELECTION' | 'REPORT_FORM' | 'LOGIN' | 'TRANSPARENCY' | 'SERVICES' | 'HELP' | 'REPORTS' | 'OPEN_DATA' | 'SERVICE_CHARTER' | 'HOW_IT_WORKS' | 'ACCESSIBILITY';
+type ViewState = 'HOME' | 'TYPE_SELECTION' | 'CHANNEL_SELECTION' | 'REPORT_FORM' | 'LOGIN' | 'TRANSPARENCY' | 'SERVICES' | 'HELP' | 'REPORTS' | 'OPEN_DATA' | 'SERVICE_CHARTER' | 'HOW_IT_WORKS' | 'ACCESSIBILITY' | 'ADMIN_DASHBOARD';
 
 function App() {
   const [view, setView] = useState<ViewState>('HOME');
@@ -22,6 +25,14 @@ function App() {
   const [selectedChannel, setSelectedChannel] = useState<Channel | undefined>(undefined);
   const [searchProtocol, setSearchProtocol] = useState('');
   const [mapKey, setMapKey] = useState(0);
+  const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [searchedManifestation, setSearchedManifestation] = useState<Manifestation | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+
+  const showToast = (message: string, type: ToastType = 'info') => {
+    setToast({ message, type });
+  };
 
   useEffect(() => {
     document.documentElement.style.fontSize = `${fontSize}%`;
@@ -53,6 +64,23 @@ function App() {
 
   const handleLogin = () => {
     setView('LOGIN');
+    window.scrollTo(0, 0);
+  };
+
+  const handleLoginSuccess = (user: User) => {
+    setAuthenticatedUser(user);
+    if (user.role === 'admin' || user.role === 'attendant') {
+      setView('ADMIN_DASHBOARD');
+    } else {
+      setView('HOME');
+    }
+    window.scrollTo(0, 0);
+  };
+
+  const handleLogout = () => {
+    setAuthenticatedUser(null);
+    setIsUserDropdownOpen(false);
+    setView('HOME');
     window.scrollTo(0, 0);
   };
 
@@ -117,15 +145,20 @@ function App() {
 
   const handleConsultar = () => {
     if (!searchProtocol.trim()) {
-      alert("Por favor, digite um número de protocolo.");
+      showToast("Por favor, digite um número de protocolo.", 'warning');
       return;
     }
-    alert(`Consultando protocolo ${searchProtocol}... Status: EM ANÁLISE`);
+    const found = userStore.findManifestationByProtocol(searchProtocol.trim().toUpperCase());
+    if (found) {
+      setSearchedManifestation(found);
+    } else {
+      showToast(`Protocolo ${searchProtocol} não encontrado.`, 'error');
+    }
   };
 
   const handleFeatureNotAvailable = (e: React.MouseEvent) => {
     e.preventDefault();
-    alert("Funcionalidade disponível na versão completa.");
+    showToast("Funcionalidade disponível na versão completa.", 'info');
   };
 
   const increaseFontSize = (e?: React.MouseEvent) => {
@@ -188,21 +221,90 @@ function App() {
                 </div>
               </div>
             </div>
-            <nav className="hidden md:flex gap-8 items-center text-sm font-medium">
+            <nav className="hidden lg:flex gap-8 items-center text-sm font-medium">
               <a className={`transition-colors cursor-pointer ${['HOME', 'TYPE_SELECTION', 'CHANNEL_SELECTION', 'REPORT_FORM', 'LOGIN', 'ACCESSIBILITY'].includes(view) ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleBackToHome}>Início</a>
-              <a className={`transition-colors cursor-pointer ${['TRANSPARENCY', 'REPORTS', 'OPEN_DATA', 'SERVICE_CHARTER'].includes(view) ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleTransparency}>Transparência</a>
+              <a className={`transition-colors cursor-pointer ${['TRANSPARENCY', 'OPEN_DATA', 'SERVICE_CHARTER'].includes(view) ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleTransparency}>Transparência</a>
               <a className={`transition-colors cursor-pointer ${view === 'SERVICES' ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleServices}>Serviços</a>
               <a className={`transition-colors cursor-pointer ${['HELP', 'HOW_IT_WORKS'].includes(view) ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleHelp}>Ajuda</a>
+              {authenticatedUser && (
+                <a className={`transition-colors cursor-pointer ${view === 'REPORTS' ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleReports}>Minhas Manifestações</a>
+              )}
+              {authenticatedUser && (authenticatedUser.role === 'admin' || authenticatedUser.role === 'attendant') && (
+                <button
+                  onClick={() => setView('ADMIN_DASHBOARD')}
+                  className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg text-[10px] font-black uppercase hover:bg-primary hover:text-white transition-all flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[16px]">shield_person</span>
+                  Painel Gestão
+                </button>
+              )}
             </nav>
-            <div className="flex gap-3">
-              <button
-                onClick={handleLogin}
-                aria-label="Entrar na área do cidadão"
-                className="hidden sm:flex items-center justify-center h-10 px-6 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-full transition-all shadow-sm gap-2"
-              >
-                <span className="material-symbols-outlined text-[20px]">account_circle</span>
-                <span>Entrar</span>
-              </button>
+            <div className="flex gap-3 relative">
+              {!authenticatedUser ? (
+                <button
+                  onClick={handleLogin}
+                  aria-label="Entrar na área do cidadão"
+                  className="hidden sm:flex items-center justify-center h-10 px-6 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-full transition-all shadow-sm gap-2"
+                >
+                  <span className="material-symbols-outlined text-[20px]">account_circle</span>
+                  <span>Entrar</span>
+                </button>
+              ) : (
+                <div className="relative">
+                  <button
+                    onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                    className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl transition-all border border-transparent hover:border-gray-100"
+                  >
+                    <div className="size-10 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                      {authenticatedUser.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="hidden sm:flex flex-col items-start">
+                      <span className="text-sm font-bold text-gray-900 leading-tight">{authenticatedUser.username}</span>
+                      <span className="text-[10px] font-bold text-green-600 flex items-center gap-0.5">
+                        <span className="material-symbols-outlined text-[12px]">verified</span>
+                        Cidadão Verificado
+                      </span>
+                    </div>
+                    <span className={`material-symbols-outlined text-gray-400 transition-transform ${isUserDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                  </button>
+
+                  {isUserDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                      <button
+                        onClick={() => { setView('HOME'); setIsUserDropdownOpen(false); }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">person</span>
+                        Meu Perfil
+                      </button>
+                      <button
+                        onClick={() => { handleReports(); setIsUserDropdownOpen(false); }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">description</span>
+                        Minhas Manifestações
+                      </button>
+                      {authenticatedUser && (authenticatedUser.role === 'admin' || authenticatedUser.role === 'attendant') && (
+                        <button
+                          onClick={() => { setView('ADMIN_DASHBOARD'); setIsUserDropdownOpen(false); }}
+                          className="w-full px-4 py-2 text-left text-sm text-primary hover:bg-primary/5 flex items-center gap-2 font-bold"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">shield_person</span>
+                          Acessar Painel ADM
+                        </button>
+                      )}
+                      <hr className="my-2 border-gray-100" />
+                      <button
+                        onClick={handleLogout}
+                        className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-bold"
+                      >
+                        <span className="material-symbols-outlined text-[20px]">logout</span>
+                        Sair (Log off)
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
               <button className="md:hidden p-2 text-gray-600">
                 <span className="material-symbols-outlined">menu</span>
               </button>
@@ -398,11 +500,17 @@ function App() {
             onBack={handleBackToChannel}
             initialType={selectedType}
             initialChannel={selectedChannel}
+            authenticatedUser={authenticatedUser}
+            showToast={showToast}
           />
         )}
 
         {view === 'LOGIN' && (
-          <LoginScreen onBack={handleBackToHome} />
+          <LoginScreen
+            onBack={handleBackToHome}
+            onLoginSuccess={handleLoginSuccess}
+            showToast={showToast}
+          />
         )}
 
         {view === 'TRANSPARENCY' && (
@@ -423,7 +531,10 @@ function App() {
         )}
 
         {view === 'REPORTS' && (
-          <ReportsPage onBack={handleBackToTransparency} />
+          <ReportsPage
+            onBack={handleBackToHome}
+            authenticatedUser={authenticatedUser}
+          />
         )}
 
         {view === 'OPEN_DATA' && (
@@ -440,6 +551,73 @@ function App() {
 
         {view === 'ACCESSIBILITY' && (
           <AccessibilityPage onBack={handleBackToHome} />
+        )}
+
+        {view === 'ADMIN_DASHBOARD' && (authenticatedUser?.role === 'admin' || authenticatedUser?.role === 'attendant') && (
+          <AdminDashboard
+            onBack={handleBackToHome}
+            authenticatedUser={authenticatedUser}
+            showToast={showToast}
+          />
+        )}
+
+        {/* Manifestation Detail Modal for Search Results */}
+        {searchedManifestation && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in">
+              <div className="p-8">
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider mb-2 inline-block">
+                      {searchedManifestation.status}
+                    </span>
+                    <h2 className="text-3xl font-black text-gray-900">{searchedManifestation.subject}</h2>
+                    <p className="text-gray-500 font-mono mt-1">{searchedManifestation.protocol}</p>
+                  </div>
+                  <button
+                    onClick={() => setSearchedManifestation(null)}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gray-50 rounded-2xl">
+                      <p className="text-xs uppercase font-bold text-gray-400 mb-1">Tipo</p>
+                      <p className="font-bold text-gray-900">{searchedManifestation.type}</p>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-2xl">
+                      <p className="text-xs uppercase font-bold text-gray-400 mb-1">Data</p>
+                      <p className="font-bold text-gray-900">{searchedManifestation.date}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs uppercase font-bold text-gray-400 mb-2">Relato</p>
+                    <div className="p-6 bg-gray-50 rounded-2xl text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      {searchedManifestation.content}
+                    </div>
+                  </div>
+
+                  {searchedManifestation.local && (
+                    <div>
+                      <p className="text-xs uppercase font-bold text-gray-400 mb-2">Local do Fato</p>
+                      <p className="text-gray-900">{searchedManifestation.local}</p>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setSearchedManifestation(null)}
+                  className="w-full mt-8 py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary-dark transition-colors"
+                >
+                  Fechar Detalhes
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Footer */}
@@ -482,6 +660,14 @@ function App() {
             </div>
           </div>
         </footer>
+
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
       </main>
     </div>
   );

@@ -1,33 +1,49 @@
 import React, { useState } from 'react';
+import { userStore, User } from '../services/userStore';
+import { ToastType } from './Toast';
 
 interface LoginScreenProps {
   onBack: () => void;
-  onRegister: () => void;
+  onLoginSuccess: (user: User) => void;
+  showToast: (message: string, type: ToastType) => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onRegister }) => {
-  const [identifier, setIdentifier] = useState('');
+const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showToast }) => {
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [username, setUsername] = useState('');
+  const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Mock authentication with localStorage
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find((u: any) =>
-      (u.username === identifier || u.email === identifier) &&
-      u.password === password
-    );
+    if (isRegistering) {
+      if (!username || !cpf || !password) {
+        showToast('Por favor, preencha todos os campos.', 'warning');
+        return;
+      }
 
-    if (user) {
-      alert(`Bem-vindo, ${user.name}! Login realizado com sucesso.`);
-      onBack(); // Go back to home
+      const existingUser = userStore.findUser(username) || userStore.findUser(cpf);
+      if (existingUser) {
+        showToast('Usuário ou CPF já cadastrado.', 'error');
+        return;
+      }
+
+      const newUser: User = { username, cpf, password, role: 'citizen' };
+      userStore.addUser(newUser);
+      showToast('Cadastro realizado com sucesso! Agora você pode entrar.', 'success');
+      setIsRegistering(false);
+      setPassword('');
     } else {
-      alert('Credenciais inválidas. Verifique seu usuário e senha.');
+      const user = userStore.authenticate(username, password);
+      if (user) {
+        showToast(`Bem-vindo, ${user.username}! Login realizado com sucesso.`, 'success');
+        onLoginSuccess(user);
+      } else {
+        showToast('Credenciais inválidas. Verifique seu usuário/CPF e senha.', 'error');
+      }
     }
-
-    console.log('Login attempt with:', { identifier, password });
   };
 
   return (
@@ -35,27 +51,56 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onRegister }) => {
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center size-16 bg-primary/10 rounded-full text-primary mb-4">
-            <span className="material-symbols-outlined text-[32px]">lock</span>
+            <span className="material-symbols-outlined text-[32px]">{isRegistering ? 'person_add' : 'lock'}</span>
           </div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">Entrar</h2>
-          <p className="text-gray-500 mt-2">Acesse sua conta para acompanhar suas manifestações</p>
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+            {isRegistering ? 'Criar Conta' : 'Entrar'}
+          </h2>
+          <p className="text-gray-500 mt-2">
+            {isRegistering
+              ? 'Cadastre-se para acompanhar suas manifestações'
+              : 'Acesse sua conta para acompanhar suas manifestações'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">CPF, E-mail ou Nome de usuário</label>
+            <label className="text-sm font-bold text-gray-700 ml-1">Nome de usuário</label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">person</span>
               <input
                 type="text"
                 required
                 className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
-                placeholder="000.000.000-00, seu@email.com ou usuário"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="Seu nome de usuário"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
           </div>
+
+          {isRegistering && (
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700 ml-1">CPF</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">fingerprint</span>
+                <input
+                  type="text"
+                  required
+                  className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
+                  placeholder="000.000.000-00"
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          {!isRegistering && (
+            <div className="text-xs text-gray-400 italic px-1">
+              * Você também pode usar seu CPF para entrar
+            </div>
+          )}
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 ml-1">Senha</label>
@@ -79,40 +124,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onRegister }) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <input type="checkbox" className="size-4 rounded border-gray-300 text-primary focus:ring-primary" />
-              <span className="text-gray-600 group-hover:text-gray-900 transition-colors">Lembrar de mim</span>
-            </label>
-            <a href="#" className="font-bold text-primary hover:text-primary-dark transition-colors">Esqueceu a senha?</a>
-          </div>
-
           <button
             type="submit"
             className="w-full h-12 bg-primary hover:bg-primary-dark text-white font-black rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"
           >
-            Entrar
+            {isRegistering ? 'Cadastrar' : 'Entrar'}
           </button>
 
           <p className="text-center text-gray-600 text-sm mt-4">
-            Não tem uma conta?{' '}
-            <a
-              href="#"
-              onClick={(e) => { e.preventDefault(); onRegister(); }}
+            {isRegistering ? 'Já tem uma conta?' : 'Não tem uma conta?'}{' '}
+            <button
+              type="button"
+              onClick={() => setIsRegistering(!isRegistering)}
               className="font-bold text-primary hover:text-primary-dark transition-colors"
             >
-              Cadastre-se
-            </a>
+              {isRegistering ? 'Entre aqui' : 'Cadastre-se'}
+            </button>
           </p>
         </form>
 
         <div className="mt-8 pt-8 border-t border-gray-100">
-          <p className="text-center text-gray-500 text-sm mb-6">Ou entre com sua conta institucional</p>
-          <button className="w-full h-12 bg-white border border-gray-200 text-gray-700 font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-gray-50 transition-all mb-4">
-            <img src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png" alt="Gov.br" className="h-6" />
-            Entrar com Gov.br
-          </button>
-
           <button
             onClick={onBack}
             className="w-full h-12 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"

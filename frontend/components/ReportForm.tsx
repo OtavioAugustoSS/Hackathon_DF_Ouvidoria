@@ -1,26 +1,30 @@
 import React, { useState, useRef, ChangeEvent, FormEvent } from 'react';
 import { api } from '../services/api';
 import { TipoManifestacao, Channel } from '../types';
+import { User, userStore, Manifestation } from '../services/userStore';
+import { ToastType } from './Toast';
 
 interface ReportFormProps {
     onBack: () => void;
     initialType?: TipoManifestacao;
     initialChannel?: Channel;
+    authenticatedUser?: User | null;
+    showToast: (message: string, type: ToastType) => void;
 }
 
-const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialChannel }) => {
+const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialChannel, authenticatedUser, showToast }) => {
     // Form State
     const [anonymous, setAnonymous] = useState(false);
     const [formData, setFormData] = useState({
         tipo_manifestacao: initialType || TipoManifestacao.RECLAMACAO,
         assunto: '',
         conteudo_texto: '',
-        nome: '',
-        cpf: '',
+        nome: authenticatedUser?.username || '',
+        cpf: authenticatedUser?.cpf || '',
         email: '',
         telefone: '',
         local_ocorrencia: '',
-        data_ocorrencia: '',
+        data_ocorrencia: new Date().toISOString().split('T')[0],
     });
 
     // Accessibility Feedback
@@ -48,12 +52,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
     // --- Effects ---
 
-    // Cleanup video preview on unmount or file change
+    // Keep blob URLs alive for the in-memory store session
     React.useEffect(() => {
         return () => {
-            if (videoPreview) {
-                URL.revokeObjectURL(videoPreview);
-            }
+            // In a real app we would revoke, but here we need them to persist in userStore
+            // if (videoPreview) URL.revokeObjectURL(videoPreview);
         };
     }, [videoPreview]);
 
@@ -121,7 +124,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             setAriaMsg('Gravação de áudio iniciada.');
         } catch (err) {
             console.error("Error accessing microphone:", err);
-            alert("Não foi possível acessar o microfone.");
+            showToast("Não foi possível acessar o microfone.", 'error');
         }
     };
 
@@ -149,7 +152,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
         } catch (err) {
             console.error("Error accessing camera:", err);
-            alert("Não foi possível acessar a câmera. Verifique as permissões.");
+            showToast("Não foi possível acessar a câmera. Verifique as permissões.", 'error');
             setIsVideoCameraOpen(false);
         }
     };
@@ -209,41 +212,32 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         setLoading(true);
         setError('');
 
-        const data = new FormData();
-        // Mandatory fields
-        data.append('tipo_manifestacao', formData.tipo_manifestacao);
-        data.append('assunto', formData.assunto || 'Geral');
-        data.append('conteudo_texto', formData.conteudo_texto);
-        data.append('is_anonimo', String(anonymous));
+        // Simulate local storage since we are offline
+        const protocolNumber = 'PROT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
 
-        // Conditional fields
-        if (!anonymous) {
-            if (formData.nome) data.append('nome', formData.nome);
-            if (formData.email) data.append('email', formData.email);
-            if (formData.telefone) data.append('telefone', formData.telefone);
-            if (formData.cpf) data.append('cpf', formData.cpf);
-        }
+        const newManifestation: Manifestation = {
+            protocol: protocolNumber,
+            type: formData.tipo_manifestacao,
+            subject: formData.assunto || 'Geral',
+            content: formData.conteudo_texto,
+            ownerCpf: anonymous ? undefined : (authenticatedUser?.cpf || formData.cpf),
+            date: new Date().toLocaleDateString('pt-BR'),
+            status: 'EM ANÁLISE',
+            local: formData.local_ocorrencia,
+            isAnonymous: anonymous,
+            attachment: file ? {
+                name: file.name,
+                type: file.type,
+                url: videoPreview || '' // videoPreview holds the blob URL for all types in this component
+            } : undefined
+        };
 
-        // Optional fields
-        if (formData.local_ocorrencia) data.append('local_ocorrencia', formData.local_ocorrencia);
-        if (formData.data_ocorrencia) data.append('data_ocorrencia', formData.data_ocorrencia);
+        userStore.saveManifestation(newManifestation);
 
-        // File
-        if (file) {
-            data.append('arquivo', file);
-        }
-
-        try {
-            const response = await api.post('/nova-manifestacao', data);
-            setSuccessData(response.data);
-            window.scrollTo(0, 0);
-            setAriaMsg('Manifestação enviada com sucesso. Protocolo gerado.');
-        } catch (err) {
-            setError('Ocorreu um erro ao enviar sua manifestação. Verifique os campos obrigatórios.');
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+        setSuccessData({ protocolo: protocolNumber });
+        setLoading(false);
+        setAriaMsg('Manifestação enviada com sucesso. Protocolo gerado.');
+        window.scrollTo(0, 0);
     };
 
     // --- Render Success ---
@@ -333,16 +327,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                     <input required id="nome" type="text" name="nome" value={formData.nome} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Ex: Maria Silva" />
                                 </div>
                                 <div>
-                                    <label htmlFor="cpf" className="block text-sm font-semibold text-gray-700 mb-2">CPF</label>
-                                    <input id="cpf" type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="000.000.000-00" />
+                                    <label htmlFor="cpf" className="block text-sm font-semibold text-gray-700 mb-2">CPF <span className="text-red-500">*</span></label>
+                                    <input required id="cpf" type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="000.000.000-00" />
                                 </div>
                                 <div>
                                     <label htmlFor="telefone" className="block text-sm font-semibold text-gray-700 mb-2">Telefone</label>
                                     <input id="telefone" type="tel" name="telefone" value={formData.telefone} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="(61) 90000-0000" />
                                 </div>
                                 <div className="col-span-1 md:col-span-2">
-                                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">E-mail <span className="text-red-500">*</span></label>
-                                    <input required id="email" type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="nome@email.com" />
+                                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">E-mail</label>
+                                    <input id="email" type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="nome@email.com" />
                                 </div>
                             </div>
                         </div>
