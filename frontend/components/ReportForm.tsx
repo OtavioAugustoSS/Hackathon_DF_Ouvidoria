@@ -259,11 +259,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         Sua manifestação foi registrada com sucesso. Utilize o número de protocolo abaixo para acompanhar o andamento.
                     </p>
 
-                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8">
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-4">
                         <span className="text-sm text-gray-600 uppercase font-bold tracking-wider">Número do Protocolo</span>
                         <div className="text-4xl font-mono font-bold text-primary mt-2 select-all">
                             {successData.protocolo}
                         </div>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 text-sm text-blue-800 bg-blue-50 border border-blue-100 px-4 py-3 rounded-xl mb-8">
+                        <span className="material-symbols-outlined text-xl">smart_toy</span>
+                        <span>Protocolo em análise preliminar pela <strong>IA IZA</strong></span>
                     </div>
 
                     <button onClick={onBack} className="w-full py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-colors shadow-lg shadow-primary/20">

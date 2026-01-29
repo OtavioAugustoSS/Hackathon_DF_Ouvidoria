@@ -21,6 +21,7 @@ function App() {
   const [selectedType, setSelectedType] = useState<TipoManifestacao | undefined>(undefined);
   const [selectedChannel, setSelectedChannel] = useState<Channel | undefined>(undefined);
   const [searchProtocol, setSearchProtocol] = useState('');
+  const [mapKey, setMapKey] = useState(0);
 
   useEffect(() => {
     document.documentElement.style.fontSize = `${fontSize}%`;
@@ -243,12 +244,23 @@ function App() {
                     </div>
                   </div>
                   <div className="relative w-full aspect-[4/3] lg:aspect-square lg:h-auto rounded-2xl overflow-hidden shadow-2xl bg-gray-100 group">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent z-10"></div>
-                    <div
-                      className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                      style={{ backgroundImage: 'url("/hero-map.png")' }}
+                    <iframe
+                      key={mapKey}
+                      title="Mapa da Localização da Ouvidoria - Palácio do Buriti"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3839.387979678661!2d-47.91526362491501!3d-15.78341698485609!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x935a3ae8c7c98007%3A0xe5452f137eb13cc3!2sPal%C3%A1cio%20do%20Buriti!5e0!3m2!1spt-BR!2sbr!4v1706497745771!5m2!1spt-BR!2sbr"
+                      className="w-full h-full border-0 absolute inset-0"
+                      allowFullScreen={true}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                    <button
+                      onClick={() => setMapKey(prev => prev + 1)}
+                      className="absolute bottom-4 right-4 bg-white hover:bg-gray-50 text-gray-700 p-2 rounded-lg shadow-lg border border-gray-200 transition-all flex items-center gap-2 text-xs font-bold z-20"
+                      title="Centralizar Mapa na Ouvidoria"
                     >
-                    </div>
+                      <span className="material-symbols-outlined text-[18px] text-primary">my_location</span>
+                      Centralizar
+                    </button>
                   </div>
                 </div>
               </div>
