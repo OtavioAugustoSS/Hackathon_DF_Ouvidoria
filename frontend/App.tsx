@@ -188,11 +188,11 @@ function App() {
                 </div>
               </div>
             </div>
-            <nav className="hidden md:flex gap-8 items-center text-sm font-medium text-gray-700">
-              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleBackToHome}>Início</a>
-              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleTransparency}>Transparência</a>
-              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleServices}>Serviços</a>
-              <a className="hover:text-primary transition-colors cursor-pointer" onClick={handleHelp}>Ajuda</a>
+            <nav className="hidden md:flex gap-8 items-center text-sm font-medium">
+              <a className={`transition-colors cursor-pointer ${['HOME', 'TYPE_SELECTION', 'CHANNEL_SELECTION', 'REPORT_FORM', 'LOGIN', 'ACCESSIBILITY'].includes(view) ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleBackToHome}>Início</a>
+              <a className={`transition-colors cursor-pointer ${['TRANSPARENCY', 'REPORTS', 'OPEN_DATA', 'SERVICE_CHARTER'].includes(view) ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleTransparency}>Transparência</a>
+              <a className={`transition-colors cursor-pointer ${view === 'SERVICES' ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleServices}>Serviços</a>
+              <a className={`transition-colors cursor-pointer ${['HELP', 'HOW_IT_WORKS'].includes(view) ? 'text-primary font-bold' : 'text-gray-700 hover:text-primary'}`} onClick={handleHelp}>Ajuda</a>
             </nav>
             <div className="flex gap-3">
               <button

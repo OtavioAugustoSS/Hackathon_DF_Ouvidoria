@@ -2,15 +2,31 @@ import React, { useState } from 'react';
 
 interface LoginScreenProps {
   onBack: () => void;
+  onRegister: () => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onBack }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onRegister }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic for login would go here
+
+    // Mock authentication with localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find((u: any) =>
+      (u.username === identifier || u.email === identifier) &&
+      u.password === password
+    );
+
+    if (user) {
+      alert(`Bem-vindo, ${user.name}! Login realizado com sucesso.`);
+      onBack(); // Go back to home
+    } else {
+      alert('Credenciais inválidas. Verifique seu usuário e senha.');
+    }
+
     console.log('Login attempt with:', { identifier, password });
   };
 
@@ -27,14 +43,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack }) => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">CPF ou E-mail</label>
+            <label className="text-sm font-bold text-gray-700 ml-1">CPF, E-mail ou Nome de usuário</label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">person</span>
               <input
                 type="text"
                 required
                 className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
-                placeholder="000.000.000-00 ou seu@email.com"
+                placeholder="000.000.000-00, seu@email.com ou usuário"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
               />
@@ -46,13 +62,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack }) => {
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">key</span>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
+                className="w-full h-12 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <span className="material-symbols-outlined">{showPassword ? 'visibility_off' : 'visibility'}</span>
+              </button>
             </div>
           </div>
 
@@ -70,6 +93,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack }) => {
           >
             Entrar
           </button>
+
+          <p className="text-center text-gray-600 text-sm mt-4">
+            Não tem uma conta?{' '}
+            <a
+              href="#"
+              onClick={(e) => { e.preventDefault(); onRegister(); }}
+              className="font-bold text-primary hover:text-primary-dark transition-colors"
+            >
+              Cadastre-se
+            </a>
+          </p>
         </form>
 
         <div className="mt-8 pt-8 border-t border-gray-100">
@@ -78,8 +112,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack }) => {
             <img src="https://www.gov.br/++theme++padrao_govbr/img/govbr-logo-large.png" alt="Gov.br" className="h-6" />
             Entrar com Gov.br
           </button>
-          
-          <button 
+
+          <button
             onClick={onBack}
             className="w-full h-12 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
           >
