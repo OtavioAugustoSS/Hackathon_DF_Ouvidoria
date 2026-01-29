@@ -23,6 +23,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         data_ocorrencia: '',
     });
 
+    // Accessibility Feedback
+    const [ariaMsg, setAriaMsg] = useState('');
+
     // File/Media State
     const [file, setFile] = useState<File | null>(null);
     const [isRecording, setIsRecording] = useState(false);
@@ -34,10 +37,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
     const [successData, setSuccessData] = useState<any | null>(null);
     const [error, setError] = useState('');
 
-    // --- Handlers ---
-
     // Video Preview State
     const [videoPreview, setVideoPreview] = useState<string | null>(null);
+
+    // Video Recording State
+    const [isVideoCameraOpen, setIsVideoCameraOpen] = useState(false);
+    const videoStreamRef = useRef<MediaStream | null>(null);
+    const videoChunksRef = useRef<Blob[]>([]);
+    const liveVideoRef = useRef<HTMLVideoElement | null>(null);
+
+    // --- Effects ---
 
     // Cleanup video preview on unmount or file change
     React.useEffect(() => {
@@ -57,6 +66,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         };
     }, []);
 
+    // --- Handlers ---
+
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -74,14 +85,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             } else {
                 setVideoPreview(null);
             }
+            setAriaMsg(`Arquivo ${selectedFile.name} anexado com sucesso.`);
         }
     };
-
-    // Video Recording State
-    const [isVideoCameraOpen, setIsVideoCameraOpen] = useState(false);
-    const videoStreamRef = useRef<MediaStream | null>(null);
-    const videoChunksRef = useRef<Blob[]>([]);
-    const liveVideoRef = useRef<HTMLVideoElement | null>(null);
 
     // Audio Recording Logic
     const startRecording = async () => {
@@ -112,6 +118,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
             mediaRecorder.start();
             setIsRecording(true);
+            setAriaMsg('Gravação de áudio iniciada.');
         } catch (err) {
             console.error("Error accessing microphone:", err);
             alert("Não foi possível acessar o microfone.");
@@ -122,6 +129,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
             setIsRecording(false);
+            setAriaMsg('Gravação de áudio finalizada e anexada.');
         }
     };
 
@@ -160,7 +168,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
         const mediaRecorder = new MediaRecorder(videoStreamRef.current);
         mediaRecorderRef.current = mediaRecorder;
-        videoChunksRef.current = []; // Use distinct ref for video chunks
+        videoChunksRef.current = [];
 
         mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
@@ -169,7 +177,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         };
 
         mediaRecorder.onstop = () => {
-            const videoBlob = new Blob(videoChunksRef.current, { type: 'video/webm' }); // Chrome default
+            const videoBlob = new Blob(videoChunksRef.current, { type: 'video/webm' });
             const videoFile = new File([videoBlob], "gravacao_video.webm", { type: 'video/webm' });
 
             setFile(videoFile);
@@ -184,12 +192,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
         mediaRecorder.start();
         setIsRecording(true);
+        setAriaMsg('Gravação de vídeo iniciada.');
     };
 
     const stopVideoRecording = () => {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
             setIsRecording(false);
+            setAriaMsg('Gravação de vídeo finalizada e anexada.');
         }
     };
 
@@ -227,6 +237,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             const response = await api.post('/nova-manifestacao', data);
             setSuccessData(response.data);
             window.scrollTo(0, 0);
+            setAriaMsg('Manifestação enviada com sucesso. Protocolo gerado.');
         } catch (err) {
             setError('Ocorreu um erro ao enviar sua manifestação. Verifique os campos obrigatórios.');
             console.error(err);
@@ -244,12 +255,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         <span className="material-symbols-outlined text-5xl">check_circle</span>
                     </div>
                     <h2 className="text-3xl font-bold text-gray-900 mb-2">Manifestação Enviada!</h2>
-                    <p className="text-gray-500 mb-8">
+                    <p className="text-gray-600 mb-8">
                         Sua manifestação foi registrada com sucesso. Utilize o número de protocolo abaixo para acompanhar o andamento.
                     </p>
 
                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8">
-                        <span className="text-sm text-gray-500 uppercase font-bold tracking-wider">Número do Protocolo</span>
+                        <span className="text-sm text-gray-600 uppercase font-bold tracking-wider">Número do Protocolo</span>
                         <div className="text-4xl font-mono font-bold text-primary mt-2 select-all">
                             {successData.protocolo}
                         </div>
@@ -269,7 +280,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             <div className="max-w-[1000px] mx-auto">
 
                 {/* Breadcrumbs */}
-                <nav className="mb-8 flex items-center gap-2 text-sm text-gray-500">
+                <nav className="mb-8 flex items-center gap-2 text-sm text-gray-600">
                     <button onClick={onBack} aria-label="Voltar para a página inicial" className="hover:text-primary transition-colors">Início</button>
                     <span className="material-symbols-outlined text-sm">chevron_right</span>
                     <span>Ouvidoria</span>
@@ -292,7 +303,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                             </div>
                             <div>
                                 <h3 className="font-bold text-gray-900">Enviar Anonimamente</h3>
-                                <p className="text-sm text-gray-500 mt-1 max-w-md">
+                                <p className="text-sm text-gray-600 mt-1 max-w-md">
                                     Se ativado, seus dados pessoais não serão enviados para o departamento responsável.
                                     <span className="block mt-1 text-xs text-orange-600">Nota: Relatos anônimos não recebem atualizações por e-mail.</span>
                                 </p>
@@ -345,8 +356,6 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                             </h3>
                         </div>
 
-                        {/* Layout Shift: If Media, show Media FIRST. If Text, show Text FIRST. */}
-
                         {(initialChannel === 'AUDIO' || initialChannel === 'VIDEO' || initialChannel === 'UPLOAD') && (
                             <div className="mb-8">
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -378,10 +387,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                     </div>
                                 ) : (
                                     <div className="w-full">
-                                        {/* AUDIO ONLY - DUAL OPTIONS */}
                                         {initialChannel === 'AUDIO' && (
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                {/* Option 1: Record Now */}
                                                 <button
                                                     type="button"
                                                     onClick={isRecording ? stopRecording : startRecording}
@@ -405,7 +412,6 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                                     )}
                                                 </button>
 
-                                                {/* Option 2: Upload File */}
                                                 {!isRecording && (
                                                     <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
                                                         <input type="file" accept="audio/*" onChange={handleFileChange} className="hidden" />
@@ -418,12 +424,10 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                             </div>
                                         )}
 
-                                        {/* VIDEO ONLY - DUAL OPTIONS */}
                                         {initialChannel === 'VIDEO' && (
                                             <div className="w-full">
                                                 {!isVideoCameraOpen ? (
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                        {/* Option 1: Record Now */}
                                                         <button
                                                             type="button"
                                                             onClick={startCamera}
@@ -435,7 +439,6 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                                             <span className="text-sm font-medium text-gray-700">Gravar Agora</span>
                                                         </button>
 
-                                                        {/* Option 2: Gallery / Internal File */}
                                                         <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
                                                             <input type="file" accept="video/*" onChange={handleFileChange} className="hidden" />
                                                             <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
@@ -489,7 +492,6 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                             </div>
                                         )}
 
-                                        {/* UPLOAD ONLY */}
                                         {initialChannel === 'UPLOAD' && (
                                             <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
                                                 <input type="file" accept="image/*,.pdf,.doc,.docx" onChange={handleFileChange} className="hidden" />
@@ -545,7 +547,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                         : "Se desejar, adicione detalhes por escrito para complementar seu envio multimídia..."
                                 }
                             ></textarea>
-                            {initialChannel === 'TEXT' && <p className="text-right text-xs text-gray-400 mt-1">Mínimo de detalhes ajuda na investigação.</p>}
+                            {initialChannel === 'TEXT' && <p className="text-right text-xs text-gray-600 mt-1">Mínimo de detalhes ajuda na investigação.</p>}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
@@ -560,9 +562,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
                     </div>
 
-                    { }
                     <div>
-                        <p className="text-xs text-gray-400 mt-3 text-center">Formatos aceitos: JPG, PNG, PDF, MP4, MP3, WebM. Max: 20MB.</p>
+                        <p className="text-xs text-gray-600 mt-3 text-center">Formatos aceitos: JPG, PNG, PDF, MP4, MP3, WebM. Max: 20MB.</p>
                     </div>
 
                     {error && (
@@ -592,6 +593,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                     </div>
 
                 </form>
+
+                {/* ARIA Live Region */}
+                <div className="sr-only" aria-live="polite">{ariaMsg}</div>
             </div>
         </main>
     );

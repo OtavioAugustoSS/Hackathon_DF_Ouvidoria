@@ -28,13 +28,32 @@ A solução foi construída com um stack moderno para garantir performance, esca
 
 ### ♿ Acessibilidade (WCAG 2.1 AA)
 O projeto nasceu inclusivo. Cada componente foi auditado para garantir:
-*   Contraste adequado para baixa visão.
-*   Navegação completa por teclado.
+*   Contraste adequado para baixa visão (mínimo 4.5:1).
+*   Navegação completa por teclado e link de "pular conteúdo".
+*   Feedback em tempo real via `aria-live` para gravações de mídia.
 *   Uso rigoroso de `aria-labels` e atributos semânticos para leitores de tela.
-*   Suporte a ferramentas de assistência.
+*   Integração nativa com **V-Libras**.
+
+### 🏗️ Arquitetura e Qualidade
+Construído sob os princípios de **Clean Architecture** no backend e **Component-Based Design** no frontend, garantindo:
+*   **Baixo Acoplamento**: Separação clara entre lógica de negócio (services) e UI.
+*   **Coesão**: Componentes especializados e reutilizáveis.
+*   **Boas Práticas**: Tipagem forte com TypeScript, tratamento de erros e Clean Code.
+
+## 📺 Demonstração (Vídeo)
+
+[Assista ao vídeo da solução em funcionamento aqui (Link do Drive/YouTube)](https://github.com/OtavioAugustoSS/Hackathon_DF_Ouvidoria)
+> *Duração: Até 7 minutos. Cobre o fluxo completo, multicanalidade e acessibilidade.*
 
 ### 🤖 Integração com IA IZA
 Preparado para o futuro, o Participa DF foi arquitetado para integração com a **IA IZA**. A estrutura de dados já prevê o processamento de linguagem natural para classificação automática de manifestações e análise de sentimento, agilizando o encaminhamento para os órgãos responsáveis.
+
+---
+
+## ⚖️ Licença e Propriedade Intelectual
+
+Este projeto está sob a licença **MIT**. As bibliotecas de terceiros utilizadas (React, FastAPI, Tailwind, etc.) são de código aberto sob licenças permissivas. 
+As imagens e ícones utilizados seguem os princípios de livre uso ou são links para serviços oficiais.
 
 ---
 
