@@ -28,6 +28,7 @@ class ManifestacaoResponse(ManifestacaoBase):
     tipo_midia: Optional[str] = None
     status: str
     created_at: datetime
+    analise_ia_metadata: Optional[str] = None
 
     class Config:
         from_attributes = True

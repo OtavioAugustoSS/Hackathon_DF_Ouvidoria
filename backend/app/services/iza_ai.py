@@ -15,19 +15,24 @@ def analisar_sentimento_iza(texto: str) -> dict:
     texto_lower = texto.lower()
     sentimento = "neutro"
     score = 0.5
+    topicos = ["geral"]
     
-    if any(word in texto_lower for word in ["ruim", "péssimo", "buraco", "demora", "lixo"]):
+    keywords_negativo = ["ruim", "péssimo", "buraco", "demora", "lixo"]
+    
+    if any(word in texto_lower for word in keywords_negativo):
         sentimento = "negativo"
-        score = 0.9
+        score = 0.99  # Alta confiança
+        topicos = ["Urgente/Infraestrutura"]
     elif any(word in texto_lower for word in ["ótimo", "excelente", "parabéns", "bom"]):
         sentimento = "positivo"
         score = 0.95
+        topicos = ["Elogio/Atendimento"]
         
     return {
         "service": "IZA_AI_V1",
         "analise": {
             "sentimento": sentimento,
             "confianca": score,
-            "topicos_detectados": ["infraestrutura", "atendimento"] if "buraco" in texto_lower else ["geral"]
+            "topicos_detectados": topicos
         }
     }

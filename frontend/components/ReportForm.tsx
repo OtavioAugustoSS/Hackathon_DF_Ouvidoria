@@ -273,7 +273,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                     name: file.name,
                     type: file.type,
                     url: mediaPreview || ''
-                } : undefined
+                } : undefined,
+                iaAnalysis: data.analise_ia_metadata ? JSON.parse(data.analise_ia_metadata) : undefined
             };
             userStore.saveManifestation(newManifestation);
 

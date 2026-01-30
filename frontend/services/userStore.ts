@@ -26,6 +26,7 @@ export interface Manifestation {
     response?: string;
     responseTime?: string;
     responderName?: string;
+    iaAnalysis?: any;
 }
 
 // In-memory data that resets on application load
@@ -41,46 +42,7 @@ const users: User[] = [
     { username: '777.777.777-77', cpf: '777.777.777-77', password: '1', name: 'Gabriel Santos', role: 'citizen' }
 ];
 
-const manifestations: Manifestation[] = [
-    // Ana Souza
-    { protocol: 'MAN-ANA-001', type: 'RECLAMAÇÃO', subject: 'Buraco na pista', content: 'Buraco enorme na EPTG altura do Guará.', ownerCpf: '111.111.111-11', date: '20/01/2026', status: 'EM ANÁLISE', local: 'Guará, DF', isAnonymous: false },
-    { protocol: 'MAN-ANA-002', type: 'ELOGIO', subject: 'Limpeza Urbana', content: 'Parabéns pela limpeza no Parque da Cidade.', ownerCpf: '111.111.111-11', date: '22/01/2026', status: 'CONCLUÍDO', local: 'Asa Sul', isAnonymous: false },
-    // Bruno Oliveira
-    { protocol: 'MAN-BRU-001', type: 'SUGESTÃO', subject: 'Ciclovias', content: 'Sugiro expandir a ciclovia na W3 Norte.', ownerCpf: '222.222.222-22', date: '21/05/2026', status: 'EM ANÁLISE', local: 'Asa Norte', isAnonymous: false },
-    { protocol: 'MAN-BRU-002', type: 'RECLAMAÇÃO', subject: 'Iluminação', content: 'Postes apagados na Comercial Norte de Taguatinga.', ownerCpf: '222.222.222-22', date: '24/05/2026', status: 'EM ANÁLISE', local: 'Taguatinga', isAnonymous: false },
-    // Carla Dias
-    { protocol: 'MAN-CAR-001', type: 'RECLAMAÇÃO', subject: 'Falta de água', content: 'Estamos sem água há 24h aqui no condomínio.', ownerCpf: '333.333.333-33', date: '25/01/2026', status: 'CONCLUÍDO', local: 'Águas Claras', isAnonymous: false },
-    { protocol: 'MAN-CAR-002', type: 'SOLICITAÇÃO', subject: 'Poda de árvore', content: 'Árvore com risco de queda sobre fiação.', ownerCpf: '333.333.333-33', date: '26/01/2026', status: 'EM ANÁLISE', local: 'Sudoeste', isAnonymous: false },
-    // Daniel Lima
-    { protocol: 'MAN-DAN-001', type: 'SOLICITAÇÃO', subject: 'Troca de lâmpada', content: 'Lâmpada do poste em frente à minha casa queimou.', ownerCpf: '444.444.444-44', date: '27/01/2026', status: 'EM ANÁLISE', local: 'Ceilândia', isAnonymous: false },
-    { protocol: 'MAN-DAN-002', type: 'RECLAMAÇÃO', subject: 'Barulho excessivo', content: 'Festa com som alto até 4h da manhã.', ownerCpf: '444.444.444-44', date: '28/01/2026', status: 'EM ANÁLISE', local: 'Ceilândia', isAnonymous: false },
-    // Elena Martins
-    { protocol: 'MAN-ELE-001', type: 'ELOGIO', subject: 'Atendimento UPA', content: 'Fui muito bem atendida na UPA de Samambaia.', ownerCpf: '555.555.555-55', date: '28/01/2026', status: 'CONCLUÍDO', local: 'Samambaia', isAnonymous: false },
-    { protocol: 'MAN-ELE-002', type: 'SUGESTÃO', subject: 'Cursos gratuitos', content: 'Poderiam oferecer cursos de informática básica.', ownerCpf: '555.555.555-55', date: '29/01/2026', status: 'EM ANÁLISE', local: 'Online', isAnonymous: false },
-    // Fábio Rocha
-    { protocol: 'MAN-FAB-001', type: 'RECLAMAÇÃO', subject: 'Ônibus lotado', content: 'A linha 0.330 está sempre superlotada.', ownerCpf: '666.666.666-66', date: '29/01/2026', status: 'EM ANÁLISE', local: 'Rodoviária', isAnonymous: false },
-    { protocol: 'MAN-FAB-002', type: 'SOLICITAÇÃO', subject: 'Pintura de faixa', content: 'Faixa de pedestre apagada perto da escola.', ownerCpf: '666.666.666-66', date: '28/01/2026', status: 'EM ANÁLISE', local: 'Sobradinho', isAnonymous: false },
-    // Gabriel Santos
-    { protocol: 'MAN-GAB-001', type: 'RECLAMAÇÃO', subject: 'Escola sem merenda', content: 'Relatos de falta de merenda na escola do bairro.', ownerCpf: '777.777.777-77', date: '27/01/2026', status: 'EM ANÁLISE', local: 'Paranoá', isAnonymous: false },
-    { protocol: 'MAN-GAB-002', type: 'ELOGIO', subject: 'Policiamento', content: 'Rondas frequentes trazem mais segurança.', ownerCpf: '777.777.777-77', date: '29/01/2026', status: 'CONCLUÍDO', local: 'Paranoá', isAnonymous: false },
-    // Teste com anexo
-    {
-        protocol: 'OUV-2026-TESTE',
-        type: 'DENÚNCIA',
-        subject: 'Teste de Anexo',
-        content: 'Esta é uma manifestação de teste para verificar a exibição de anexos (imagem).',
-        ownerCpf: '111.111.111-11',
-        date: '30/01/2026',
-        status: 'EM ANÁLISE',
-        local: 'Brasília',
-        isAnonymous: false,
-        attachment: {
-            name: 'evidencia.jpg',
-            type: 'image/jpeg',
-            url: 'https://images.unsplash.com/photo-1555881400-74d7acaacd81?q=80&w=600&auto=format&fit=crop'
-        }
-    }
-];
+const manifestations: Manifestation[] = [];
 
 export const userStore = {
     // User methods

@@ -349,12 +349,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                                             <td className={`px-6 py-4 text-sm font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>{m.subject}</td>
                                             <td className={`px-6 py-4 text-xs font-medium max-w-[120px] truncate ${highContrast ? 'text-gray-300' : 'text-gray-500'}`}>{m.local || 'Não informado'}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-tighter ${highContrast
-                                                    ? 'bg-black text-yellow-400 border border-yellow-400'
-                                                    : m.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
-                                                        m.status === 'RECUSADO' ? 'bg-red-100 text-red-700' :
-                                                            m.status === 'EM ANDAMENTO' ? 'bg-blue-100 text-blue-700' :
-                                                                'bg-yellow-100 text-yellow-700'
+                                                <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-tighter ${m.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
+                                                    m.status === 'RECUSADO' ? 'bg-red-100 text-red-700' :
+                                                        m.status === 'EM ANDAMENTO' ? 'bg-blue-100 text-blue-700' :
+                                                            'bg-yellow-100 text-yellow-700'
                                                     }`}>
                                                     {m.status}
                                                 </span>
@@ -753,6 +751,75 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                             </div>
 
                             <div className="space-y-10">
+                                {selectedManifestation.iaAnalysis && selectedManifestation.iaAnalysis.analise && (
+                                    <div className="mb-8 p-6 bg-gradient-to-br from-blue-50/50 to-white rounded-3xl border border-blue-100 shadow-sm relative overflow-hidden group">
+                                        <div className="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                            <span className="material-symbols-outlined text-[120px] text-blue-600">psychology</span>
+                                        </div>
+
+                                        <div className="relative z-10">
+                                            <div className="flex items-center gap-3 mb-6">
+                                                <div className="size-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+                                                    <span className="material-symbols-outlined text-2xl">smart_toy</span>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-black text-gray-900 leading-none">Análise Preliminar IZA</h3>
+                                                    <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mt-1">Inteligência Artificial</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                {/* Sentiment Card */}
+                                                <div className={`p-4 rounded-2xl border ${selectedManifestation.iaAnalysis.analise.sentimento === 'negativo' ? 'bg-red-50 border-red-100' :
+                                                    selectedManifestation.iaAnalysis.analise.sentimento === 'positivo' ? 'bg-green-50 border-green-100' :
+                                                        'bg-gray-50 border-gray-100'
+                                                    }`}>
+                                                    <p className="text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-wider">Sentimento Detectado</p>
+                                                    <div className={`flex items-center gap-2 font-black text-lg ${selectedManifestation.iaAnalysis.analise.sentimento === 'negativo' ? 'text-red-600' :
+                                                        selectedManifestation.iaAnalysis.analise.sentimento === 'positivo' ? 'text-green-600' :
+                                                            'text-gray-600'
+                                                        }`}>
+                                                        <span className="material-symbols-outlined text-2xl">
+                                                            {selectedManifestation.iaAnalysis.analise.sentimento === 'negativo' ? 'sentiment_dissatisfied' :
+                                                                selectedManifestation.iaAnalysis.analise.sentimento === 'positivo' ? 'sentiment_satisfied' : 'sentiment_neutral'}
+                                                        </span>
+                                                        <span className="capitalize">{selectedManifestation.iaAnalysis.analise.sentimento}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Topics Card */}
+                                                <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                                                    <p className="text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-wider">Tópicos Identificados</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {selectedManifestation.iaAnalysis.analise.topicos_detectados.map((topic: string, i: number) => (
+                                                            <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-bold border border-gray-200 uppercase tracking-tighter">
+                                                                {topic}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Confidence Card */}
+                                                <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-center">
+                                                    <p className="text-[10px] uppercase font-bold text-gray-400 mb-1 tracking-wider flex justify-between">
+                                                        Nível de Confiança
+                                                        <span className="text-primary">{Math.round(selectedManifestation.iaAnalysis.analise.confianca * 100)}%</span>
+                                                    </p>
+                                                    <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-1">
+                                                        <div
+                                                            className={`h-full rounded-full ${selectedManifestation.iaAnalysis.analise.confianca > 0.8 ? 'bg-green-500' : 'bg-yellow-500'}`}
+                                                            style={{ width: `${selectedManifestation.iaAnalysis.analise.confianca * 100}%` }}
+                                                        ></div>
+                                                    </div>
+                                                    <p className="text-[10px] font-bold text-gray-500 text-right uppercase">
+                                                        {selectedManifestation.iaAnalysis.analise.confianca > 0.9 ? 'Alta Precisão' : 'Média Precisão'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div>
                                     <p className={`text-[10px] font-black uppercase tracking-widest mb-4 ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Relato da Manifestação</p>
                                     <div className={`p-8 rounded-3xl leading-relaxed text-lg whitespace-pre-wrap border ${highContrast ? 'bg-black border-yellow-400 text-white' : 'bg-gray-50 border-gray-100 text-gray-700'}`}>
