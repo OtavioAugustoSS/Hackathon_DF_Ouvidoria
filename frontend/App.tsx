@@ -657,56 +657,132 @@ function App() {
         {searchedManifestation && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-scale-in">
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-6">
+              <div className="bg-primary px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined">search_check</span>
+                  Detalhes da Manifestação
+                </h3>
+                <button
+                  onClick={() => setSearchedManifestation(null)}
+                  className="text-white/80 hover:text-white transition-colors p-1"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="p-6 md:p-8 space-y-6">
+
+                {/* Status Badge & Actions */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-gray-100">
                   <div>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider mb-2 inline-block">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 inline-block ${searchedManifestation.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
+                        searchedManifestation.status === 'EM ANÁLISE' ? 'bg-blue-100 text-blue-700' :
+                          'bg-gray-100 text-gray-700'
+                      }`}>
                       {searchedManifestation.status}
                     </span>
-                    <h2 className="text-3xl font-black text-gray-900">{searchedManifestation.subject}</h2>
-                    <p className="text-gray-500 font-mono mt-1">{searchedManifestation.protocol}</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-gray-900">{searchedManifestation.subject}</h2>
                   </div>
-                  <button
-                    onClick={() => setSearchedManifestation(null)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                  >
-                    <span className="material-symbols-outlined">close</span>
-                  </button>
+                  <div className="flex flex-col items-end">
+                    <span className="text-sm font-bold text-gray-500 uppercase">Protocolo</span>
+                    <span className="text-lg font-mono font-bold text-primary">{searchedManifestation.protocol}</span>
+                  </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-gray-50 rounded-2xl">
-                      <p className="text-xs uppercase font-bold text-gray-400 mb-1">Tipo</p>
-                      <p className="font-bold text-gray-900">{searchedManifestation.type}</p>
-                    </div>
-                    <div className="p-4 bg-gray-50 rounded-2xl">
-                      <p className="text-xs uppercase font-bold text-gray-400 mb-1">Data</p>
-                      <p className="font-bold text-gray-900">{searchedManifestation.date}</p>
-                    </div>
+                {/* Grid Info */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <p className="text-xs uppercase font-bold text-gray-400 mb-1 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]">category</span> Tipo
+                    </p>
+                    <p className="font-bold text-gray-900">{searchedManifestation.type}</p>
                   </div>
-
-                  <div>
-                    <p className="text-xs uppercase font-bold text-gray-400 mb-2">Relato</p>
-                    <div className="p-6 bg-gray-50 rounded-2xl text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {searchedManifestation.content}
-                    </div>
+                  <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <p className="text-xs uppercase font-bold text-gray-400 mb-1 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]">calendar_today</span> Data
+                    </p>
+                    <p className="font-bold text-gray-900">{searchedManifestation.date}</p>
                   </div>
-
                   {searchedManifestation.local && (
-                    <div>
-                      <p className="text-xs uppercase font-bold text-gray-400 mb-2">Local do Fato</p>
-                      <p className="text-gray-900">{searchedManifestation.local}</p>
+                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 col-span-2">
+                      <p className="text-xs uppercase font-bold text-gray-400 mb-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[14px]">location_on</span> Local do Fato
+                      </p>
+                      <p className="text-gray-900 font-bold">{searchedManifestation.local}</p>
                     </div>
                   )}
                 </div>
 
-                <button
-                  onClick={() => setSearchedManifestation(null)}
-                  className="w-full mt-8 py-4 bg-primary text-white font-bold rounded-2xl hover:bg-primary-dark transition-colors"
-                >
-                  Fechar Detalhes
-                </button>
+                {/* Content */}
+                <div>
+                  <p className="text-xs uppercase font-bold text-gray-900 mb-2 flex items-center gap-2 border-b pb-2">
+                    <span className="material-symbols-outlined text-[18px] text-primary">description</span>
+                    Relato
+                  </p>
+                  <div className="p-6 bg-gray-50 rounded-2xl text-gray-700 leading-relaxed whitespace-pre-wrap border border-gray-100 text-justify">
+                    {searchedManifestation.content}
+                  </div>
+                </div>
+
+                {/* Attachments */}
+                {searchedManifestation.attachment && (
+                  <div>
+                    <p className="text-xs uppercase font-bold text-gray-900 mb-2 flex items-center gap-2 border-b pb-2">
+                      <span className="material-symbols-outlined text-[18px] text-primary">attach_file</span>
+                      Anexos
+                    </p>
+                    <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                      {searchedManifestation.attachment.type.startsWith('image/') ? (
+                        <div className="rounded-lg overflow-hidden shadow-sm border border-gray-200">
+                          <img
+                            src={searchedManifestation.attachment.url}
+                            alt="Anexo da manifestação"
+                            className="w-full h-auto max-h-96 object-contain bg-gray-200"
+                          />
+                        </div>
+                      ) : searchedManifestation.attachment.type.startsWith('video/') ? (
+                        <div className="rounded-lg overflow-hidden shadow-sm border border-gray-200">
+                          <video controls className="w-full max-h-96 bg-black">
+                            <source src={searchedManifestation.attachment.url} type={searchedManifestation.attachment.type} />
+                            Seu navegador não suporta a reprodução de vídeo.
+                          </video>
+                        </div>
+                      ) : searchedManifestation.attachment.type.startsWith('audio/') ? (
+                        <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200 flex items-center justify-center">
+                          <audio controls className="w-full">
+                            <source src={searchedManifestation.attachment.url} type={searchedManifestation.attachment.type} />
+                            Seu navegador não suporta a reprodução de áudio.
+                          </audio>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                          <span className="material-symbols-outlined text-gray-400">inventory_2</span>
+                          <span className="text-sm font-medium text-gray-700">{searchedManifestation.attachment.name}</span>
+                          <a
+                            href={searchedManifestation.attachment.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-auto text-primary hover:underline text-sm font-bold"
+                          >
+                            Baixar
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Responses (if any) could go here */}
+
+                <div className="pt-4 flex justify-end">
+                  <button
+                    onClick={() => setSearchedManifestation(null)}
+                    className="py-3 px-8 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition-colors shadow-lg"
+                  >
+                    Fechar
+                  </button>
+                </div>
+
               </div>
             </div>
           </div>

@@ -62,7 +62,24 @@ const manifestations: Manifestation[] = [
     { protocol: 'MAN-FAB-002', type: 'SOLICITAÇÃO', subject: 'Pintura de faixa', content: 'Faixa de pedestre apagada perto da escola.', ownerCpf: '666.666.666-66', date: '28/01/2026', status: 'EM ANÁLISE', local: 'Sobradinho', isAnonymous: false },
     // Gabriel Santos
     { protocol: 'MAN-GAB-001', type: 'RECLAMAÇÃO', subject: 'Escola sem merenda', content: 'Relatos de falta de merenda na escola do bairro.', ownerCpf: '777.777.777-77', date: '27/01/2026', status: 'EM ANÁLISE', local: 'Paranoá', isAnonymous: false },
-    { protocol: 'MAN-GAB-002', type: 'ELOGIO', subject: 'Policiamento', content: 'Rondas frequentes trazem mais segurança.', ownerCpf: '777.777.777-77', date: '29/01/2026', status: 'CONCLUÍDO', local: 'Paranoá', isAnonymous: false }
+    { protocol: 'MAN-GAB-002', type: 'ELOGIO', subject: 'Policiamento', content: 'Rondas frequentes trazem mais segurança.', ownerCpf: '777.777.777-77', date: '29/01/2026', status: 'CONCLUÍDO', local: 'Paranoá', isAnonymous: false },
+    // Teste com anexo
+    {
+        protocol: 'OUV-2026-TESTE',
+        type: 'DENÚNCIA',
+        subject: 'Teste de Anexo',
+        content: 'Esta é uma manifestação de teste para verificar a exibição de anexos (imagem).',
+        ownerCpf: '111.111.111-11',
+        date: '30/01/2026',
+        status: 'EM ANÁLISE',
+        local: 'Brasília',
+        isAnonymous: false,
+        attachment: {
+            name: 'evidencia.jpg',
+            type: 'image/jpeg',
+            url: 'https://images.unsplash.com/photo-1555881400-74d7acaacd81?q=80&w=600&auto=format&fit=crop'
+        }
+    }
 ];
 
 export const userStore = {
