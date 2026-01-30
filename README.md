@@ -7,7 +7,7 @@ Bem-vindo ao repositório da solução desenvolvida para a categoria **Ouvidoria
 
 ## 🚀 Como Rodar o Projeto
 
-Prezamos pela simplicidade de execução para facilitar a avaliação. Não é necessário instalar bancos de dados externos complexos. A solução utiliza **SQLite** nativo.
+Prezamos pela simplicidade de execução. Siga os passos abaixo para rodar toda a aplicação (Frontend + Backend) com poucos comandos.
 
 ### Pré-requisitos
 - **Node.js** (versão 18+ recomendada)
@@ -15,36 +15,40 @@ Prezamos pela simplicidade de execução para facilitar a avaliação. Não é n
 
 ### Passo a Passo
 
-#### 1. Backend (API & IA)
-Abra um terminal na pasta raiz e entre na pasta `backend`:
+#### 1. Instalação
+Abra um terminal na pasta raiz do projeto e execute os comandos para instalar as dependências do Backend e Frontend:
 
 ```bash
-cd backend
-```
+# Instalar dependências do Backend (Python)
+pip install -r backend/requirements.txt
 
-Instale as dependências:
-```bash
-pip install -r requirements.txt
-```
-
-Execute o servidor (ele criará o banco de dados `participa_df.db` automaticamente):
-```bash
-uvicorn main:app --reload
-```
-*O backend rodará em `http://127.0.0.1:8000`.*
-
-#### 2. Frontend (PWA)
-Abra **outro terminal** na pasta raiz (mantendo o backend rodando):
-
-```bash
+# Instalar dependências do Frontend (Node.js)
 npm install
 ```
 
-Execute a aplicação:
+#### 2. Execução (Modo Simplificado)
+Para rodar tudo (API + Interface) simultaneamente, execute na raiz:
+
+```bash
+npm run dev:all
+```
+- O Frontend abrirá em: `http://localhost:3000`
+- O Backend rodará em: `http://localhost:8000`
+
+---
+
+#### *Opcional: Execução Manual (Separada)*
+Se preferir rodar em terminais separados para debugar:
+
+**Terminal 1 (Backend):**
+```bash
+npm run backend
+```
+
+**Terminal 2 (Frontend):**
 ```bash
 npm run dev
 ```
-*O frontend rodará em `http://localhost:3000` (ou porta similar indicada no terminal).*
 
 ---
 
