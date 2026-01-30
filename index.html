@@ -46,32 +46,11 @@
         }
 
         /* High Contrast Overrides */
-        .high-contrast,
-        .high-contrast body,
-        .high-contrast main,
-        .high-contrast section,
-        .high-contrast header,
-        .high-contrast footer,
-        .high-contrast div,
-        .high-contrast span,
-        .high-contrast p,
-        .high-contrast h1,
-        .high-contrast h2,
-        .high-contrast h3,
-        .high-contrast h4,
-        .high-contrast h5,
-        .high-contrast h6,
-        .high-contrast label,
-        .high-contrast input,
-        .high-contrast select,
-        .high-contrast textarea,
-        .high-contrast button {
-            /* Base overrides - be careful with specificity */
-        }
+        /* High Contrast Overrides */
 
         /* Enforce Black Backgrounds */
         .high-contrast,
-        .high-contrast body,
+        .high-contrast main,
         .high-contrast .bg-white,
         .high-contrast .bg-gray-50,
         .high-contrast .bg-gray-100,
@@ -82,7 +61,8 @@
         .high-contrast .bg-red-50,
         .high-contrast .bg-green-50,
         .high-contrast .bg-yellow-50,
-        .high-contrast main {
+        .high-contrast .bg-orange-50,
+        .high-contrast section {
             background-color: #000 !important;
             color: #fff !important;
         }
@@ -101,6 +81,10 @@
         /* Text Colors - Yellow for emphasis/links, White for standard */
         .high-contrast .text-primary,
         .high-contrast .text-primary-dark,
+        .high-contrast .text-blue-100,
+        .high-contrast .text-blue-200,
+        .high-contrast .text-blue-300,
+        .high-contrast .text-blue-400,
         .high-contrast .text-blue-500,
         .high-contrast .text-blue-600,
         .high-contrast .text-blue-700,
@@ -111,6 +95,9 @@
         .high-contrast .text-red-700,
         .high-contrast .text-green-600,
         .high-contrast .text-green-700,
+        .high-contrast .text-orange-500,
+        .high-contrast .text-orange-600,
+        .high-contrast .text-orange-700,
         .high-contrast .text-gray-900,
         .high-contrast .text-gray-700,
         .high-contrast .text-gray-600,
@@ -123,14 +110,43 @@
             /* Ensure white text on dark bg (if any) also becomes yellow if needed, or stays white. Let's make emphasis yellow. */
         }
 
-        /* Specific overrides for White text on Buttons */
+        /* Buttons & Chip Actions - Yellow Background, Black Text */
         .high-contrast button.bg-primary,
         .high-contrast button.bg-primary-dark,
-        .high-contrast .bg-primary,
-        .high-contrast .bg-primary-dark {
+        .high-contrast a.bg-primary,
+        .high-contrast a.bg-primary-dark,
+        .high-contrast .bg-primary.rounded-full,
+        /* Target "Entrar" button if it's a div/span or specific shape */
+        .high-contrast .cursor-pointer.bg-primary {
             background-color: #ffff00 !important;
             color: #000 !important;
             border: 2px solid #fff !important;
+        }
+
+        /* Force children of yellow buttons to be black - High Specificity to beat text util classes */
+        .high-contrast button.bg-primary,
+        .high-contrast button.bg-primary-dark,
+        .high-contrast a.bg-primary,
+        .high-contrast a.bg-primary-dark,
+        .high-contrast .bg-primary.rounded-full,
+        .high-contrast .cursor-pointer.bg-primary,
+        .high-contrast button.bg-primary *,
+        .high-contrast button.bg-primary-dark *,
+        .high-contrast a.bg-primary *,
+        .high-contrast a.bg-primary-dark *,
+        .high-contrast .bg-primary.rounded-full *,
+        .high-contrast .cursor-pointer.bg-primary *,
+        .high-contrast button.bg-primary .material-symbols-outlined {
+            color: #000 !important;
+        }
+
+        /* General Containers (Header, Footer, Sections) - Black Background, Yellow Text */
+        .high-contrast .bg-primary:not(button):not(a):not(.rounded-full):not(.cursor-pointer),
+        .high-contrast .bg-primary-dark:not(button):not(a):not(.rounded-full):not(.cursor-pointer) {
+            background-color: #000 !important;
+            color: #ffff00 !important;
+            border-bottom: 1px solid #ffff00 !important;
+            border-top: 1px solid #ffff00 !important;
         }
 
         /* Ultra-High Specificity for Inputs */
