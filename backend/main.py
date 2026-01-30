@@ -19,7 +19,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,7 +30,7 @@ os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # Include Routers
-app.include_router(manifestacao.router, prefix=settings.API_V1_STR, tags=["manifestacao"])
+app.include_router(manifestacao.router, prefix=f"{settings.API_V1_STR}/manifestacao", tags=["manifestacao"])
 
 if __name__ == "__main__":
     import uvicorn
