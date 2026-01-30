@@ -83,8 +83,7 @@ npm run dev
 
 ## 📹 Vídeo de Demonstração
 
-[Link para o Vídeo de Demonstração (YouTube/Vimeo)]
-*Insira aqui o link final do vídeo conforme exigido no item 8.2.2-III do edital.*
+https://youtu.be/0KF4q_tEftQ
 
 ---
 
