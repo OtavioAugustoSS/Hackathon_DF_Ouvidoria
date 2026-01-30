@@ -41,8 +41,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
     const [successData, setSuccessData] = useState<any | null>(null);
     const [error, setError] = useState('');
 
-    // Video Preview State
-    const [videoPreview, setVideoPreview] = useState<string | null>(null);
+    // Media Preview State (Images, Audio, Video)
+    const [mediaPreview, setMediaPreview] = useState<string | null>(null);
 
     // Video Recording State
     const [isVideoCameraOpen, setIsVideoCameraOpen] = useState(false);
@@ -56,9 +56,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
     React.useEffect(() => {
         return () => {
             // In a real app we would revoke, but here we need them to persist in userStore
-            // if (videoPreview) URL.revokeObjectURL(videoPreview);
+            // if (mediaPreview) URL.revokeObjectURL(mediaPreview);
         };
-    }, [videoPreview]);
+    }, [mediaPreview]);
 
     // Cleanup video stream on unmount
     React.useEffect(() => {
@@ -69,11 +69,25 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         };
     }, []);
 
+    const formatCPF = (value: string) => {
+        const numbers = value.replace(/\D/g, '').slice(0, 11);
+        return numbers
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d{1,2})/, '$1-$2');
+    };
+
     // --- Handlers ---
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        let newValue = value;
+
+        if (name === 'cpf') {
+            newValue = formatCPF(value);
+        }
+
+        setFormData(prev => ({ ...prev, [name]: newValue }));
     };
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,12 +95,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             const selectedFile = e.target.files[0];
             setFile(selectedFile);
 
-            // Create preview if video or audio
-            if (selectedFile.type.startsWith('video/') || selectedFile.type.startsWith('audio/')) {
+            // Create preview if image, video or audio
+            if (selectedFile.type.startsWith('image/') || selectedFile.type.startsWith('video/') || selectedFile.type.startsWith('audio/')) {
                 const url = URL.createObjectURL(selectedFile);
-                setVideoPreview(url);
+                setMediaPreview(url);
             } else {
-                setVideoPreview(null);
+                setMediaPreview(null);
             }
             setAriaMsg(`Arquivo ${selectedFile.name} anexado com sucesso.`);
         }
@@ -113,7 +127,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
                 // Construct preview URL for audio playback
                 const audioUrl = URL.createObjectURL(audioBlob);
-                setVideoPreview(audioUrl);
+                setMediaPreview(audioUrl);
 
                 // Stop all tracks
                 stream.getTracks().forEach(track => track.stop());
@@ -187,7 +201,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
             // Create preview
             const videoUrl = URL.createObjectURL(videoBlob);
-            setVideoPreview(videoUrl);
+            setMediaPreview(videoUrl);
 
             // Close camera mode since we have the file now
             stopCamera();
@@ -228,7 +242,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
             attachment: file ? {
                 name: file.name,
                 type: file.type,
-                url: videoPreview || '' // videoPreview holds the blob URL for all types in this component
+                url: mediaPreview || '' // mediaPreview holds the blob URL for all types in this component
             } : undefined
         };
 
@@ -290,6 +304,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                 <div className="flex flex-col gap-2 mb-8">
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Nova Manifestação</h1>
                     <p className="text-gray-600">Preencha os dados abaixo para registrar sua reclamação, elogio ou sugestão ao Governo do Distrito Federal.</p>
+                    <p className="text-xs text-red-500 font-bold mt-2">Campos marcados com (*) são de preenchimento obrigatório.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -303,8 +318,8 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                             <div>
                                 <h3 className="font-bold text-gray-900">Enviar Anonimamente</h3>
                                 <p className="text-sm text-gray-600 mt-1 max-w-md">
-                                    Se ativado, seus dados pessoais não serão enviados para o departamento responsável.
-                                    <span className="block mt-1 text-xs text-orange-600">Nota: Relatos anônimos não recebem atualizações por e-mail.</span>
+                                    Se ativado, seus dados pessoais não serão coletados e o formulário de identificação será ocultado.
+                                    <span className="block mt-1 text-xs text-blue-600 font-medium italic">As exigências de Nome e CPF são removidas neste modo.</span>
                                 </p>
                             </div>
                         </div>
@@ -373,15 +388,23 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                                     <p className="text-xs text-gray-600">{file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
                                                 </div>
                                             </div>
-                                            <button type="button" onClick={() => { setFile(null); setVideoPreview(null); }} aria-label="Remover arquivo" className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
+                                            <button type="button" onClick={() => { setFile(null); setMediaPreview(null); }} aria-label="Remover arquivo" className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
                                                 <span className="material-symbols-outlined">delete</span>
                                             </button>
                                         </div>
-                                        {videoPreview && file.type.startsWith('video/') && (
-                                            <video src={videoPreview} controls className="w-full h-48 rounded-lg mt-2 object-contain bg-black" />
+                                        {mediaPreview && file.type.startsWith('image/') && (
+                                            <div className="relative group rounded-xl overflow-hidden border border-gray-100 shadow-sm mt-2">
+                                                <img src={mediaPreview} alt="Preview do anexo" className="w-full h-auto max-h-64 object-cover" />
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <span className="text-white text-xs font-bold uppercase tracking-widest">Pré-visualização</span>
+                                                </div>
+                                            </div>
                                         )}
-                                        {videoPreview && file.type.startsWith('audio/') && (
-                                            <audio src={videoPreview} controls className="w-full mt-2" />
+                                        {mediaPreview && file.type.startsWith('video/') && (
+                                            <video src={mediaPreview} controls className="w-full h-48 rounded-lg mt-2 object-contain bg-black" />
+                                        )}
+                                        {mediaPreview && file.type.startsWith('audio/') && (
+                                            <audio src={mediaPreview} controls className="w-full mt-2" />
                                         )}
                                     </div>
                                 ) : (
@@ -551,12 +574,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
                             <div>
-                                <label htmlFor="local_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Local do Fato</label>
-                                <input id="local_ocorrencia" type="text" name="local_ocorrencia" value={formData.local_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Rua, Bairro ou Ponto de Referência" />
+                                <label htmlFor="local_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Local do Fato <span className="text-red-500">*</span></label>
+                                <input id="local_ocorrencia" required type="text" name="local_ocorrencia" value={formData.local_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Rua, Bairro ou Ponto de Referência" />
                             </div>
                             <div>
-                                <label htmlFor="data_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Data do Ocorrido</label>
-                                <input id="data_ocorrencia" type="date" name="data_ocorrencia" value={formData.data_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" />
+                                <label htmlFor="data_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Data do Ocorrido <span className="text-red-500">*</span></label>
+                                <input id="data_ocorrencia" required type="date" name="data_ocorrencia" value={formData.data_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" />
                             </div>
                         </div>
                     </div>

@@ -10,38 +10,64 @@ interface LoginScreenProps {
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showToast }) => {
   const [isRegistering, setIsRegistering] = useState(false);
-  const [username, setUsername] = useState('');
-  const [cpf, setCpf] = useState('');
+  const [loginIdentifier, setLoginIdentifier] = useState('');
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const formatCPF = (value: string) => {
+    const numbers = value.replace(/\D/g, '').slice(0, 11);
+    return numbers
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})/, '$1-$2');
+  };
+
+  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCPF(e.target.value);
+    // If it's a numeric-only input or looks like a CPF, apply mask. 
+    // Otherwise allow administrative usernames like 'ad'
+    if (/^\d/.test(e.target.value) || e.target.value === '') {
+      setLoginIdentifier(formatted);
+    } else {
+      setLoginIdentifier(e.target.value);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (isRegistering) {
-      if (!username || !cpf || !password) {
+      if (!loginIdentifier || !fullName || !password) {
         showToast('Por favor, preencha todos os campos.', 'warning');
         return;
       }
 
-      const existingUser = userStore.findUser(username) || userStore.findUser(cpf);
+      // loginIdentifier is the CPF in registration mode
+      const existingUser = userStore.findUser(loginIdentifier);
       if (existingUser) {
-        showToast('Usuário ou CPF já cadastrado.', 'error');
+        showToast('Este CPF já está cadastrado.', 'error');
         return;
       }
 
-      const newUser: User = { username, cpf, password, role: 'citizen' };
+      const newUser: User = {
+        username: loginIdentifier, // CPF as username for consistency
+        cpf: loginIdentifier,
+        password,
+        name: fullName,
+        role: 'citizen'
+      };
       userStore.addUser(newUser);
       showToast('Cadastro realizado com sucesso! Agora você pode entrar.', 'success');
       setIsRegistering(false);
       setPassword('');
     } else {
-      const user = userStore.authenticate(username, password);
+      const user = userStore.authenticate(loginIdentifier, password);
       if (user) {
-        showToast(`Bem-vindo, ${user.username}! Login realizado com sucesso.`, 'success');
+        showToast(`Bem-vindo, ${user.name || user.username}! Login realizado com sucesso.`, 'success');
         onLoginSuccess(user);
       } else {
-        showToast('Credenciais inválidas. Verifique seu usuário/CPF e senha.', 'error');
+        showToast('Credenciais inválidas. Verifique seu CPF e senha.', 'error');
       }
     }
   };
@@ -58,47 +84,41 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
           </h2>
           <p className="text-gray-500 mt-2">
             {isRegistering
-              ? 'Cadastre-se para acompanhar suas manifestações'
-              : 'Acesse sua conta para acompanhar suas manifestações'}
+              ? 'Cadastre-se com seu CPF para acompanhar suas manifestações'
+              : 'Acesse com seu CPF para acompanhar suas manifestações'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">Nome de usuário</label>
+            <label className="text-sm font-bold text-gray-700 ml-1">CPF</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">person</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">fingerprint</span>
               <input
                 type="text"
                 required
                 className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
-                placeholder="Seu nome de usuário"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="000.000.000-00"
+                value={loginIdentifier}
+                onChange={handleLoginChange}
               />
             </div>
           </div>
 
           {isRegistering && (
             <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700 ml-1">CPF</label>
+              <label className="text-sm font-bold text-gray-700 ml-1">Nome Completo</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">fingerprint</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">person</span>
                 <input
                   type="text"
                   required
                   className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
-                  placeholder="000.000.000-00"
-                  value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
+                  placeholder="Seu nome completo"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                 />
               </div>
-            </div>
-          )}
-
-          {!isRegistering && (
-            <div className="text-xs text-gray-400 italic px-1">
-              * Você também pode usar seu CPF para entrar
             </div>
           )}
 

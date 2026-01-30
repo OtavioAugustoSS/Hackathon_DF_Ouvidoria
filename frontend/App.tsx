@@ -13,6 +13,7 @@ import AccessibilityPage from './components/AccessibilityPage';
 import AdminDashboard from './components/AdminDashboard';
 import { TipoManifestacao, Channel } from './types';
 import { User, userStore, Manifestation } from './services/userStore';
+import { settingsStore } from './services/settingsStore';
 import Toast, { ToastType } from './components/Toast';
 
 type ViewState = 'HOME' | 'TYPE_SELECTION' | 'CHANNEL_SELECTION' | 'REPORT_FORM' | 'LOGIN' | 'TRANSPARENCY' | 'SERVICES' | 'HELP' | 'REPORTS' | 'OPEN_DATA' | 'SERVICE_CHARTER' | 'HOW_IT_WORKS' | 'ACCESSIBILITY' | 'ADMIN_DASHBOARD';
@@ -29,6 +30,8 @@ function App() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [searchedManifestation, setSearchedManifestation] = useState<Manifestation | null>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const globalSettings = settingsStore.getSettings();
 
   const showToast = (message: string, type: ToastType = 'info') => {
     setToast({ message, type });
@@ -216,8 +219,8 @@ function App() {
                   <span className="material-symbols-outlined text-[28px]">account_balance</span>
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-xl font-black tracking-tight leading-none text-gray-900">Participa DF</h2>
-                  <span className="text-[10px] font-bold tracking-widest uppercase text-gray-600">Ouvidoria Oficial</span>
+                  <h2 className="text-xl font-black tracking-tight leading-none text-gray-900">{globalSettings.portalName}</h2>
+                  <span className="text-[10px] theme-text-secondary font-bold uppercase tracking-widest mt-1">Ouvidoria Oficial</span>
                 </div>
               </div>
             </div>
@@ -256,10 +259,10 @@ function App() {
                     className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-xl transition-all border border-transparent hover:border-gray-100"
                   >
                     <div className="size-10 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                      {authenticatedUser.username.charAt(0).toUpperCase()}
+                      {(authenticatedUser.name || authenticatedUser.username).charAt(0).toUpperCase()}
                     </div>
                     <div className="hidden sm:flex flex-col items-start">
-                      <span className="text-sm font-bold text-gray-900 leading-tight">{authenticatedUser.username}</span>
+                      <span className="text-sm font-bold text-gray-900 leading-tight">{authenticatedUser.name || authenticatedUser.username}</span>
                       <span className="text-[10px] font-bold text-green-600 flex items-center gap-0.5">
                         <span className="material-symbols-outlined text-[12px]">verified</span>
                         Cidadão Verificado
@@ -305,13 +308,102 @@ function App() {
                   )}
                 </div>
               )}
-              <button className="md:hidden p-2 text-gray-600">
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="md:hidden p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                aria-label="Abrir menu"
+              >
                 <span className="material-symbols-outlined">menu</span>
               </button>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Mobile Sidebar Overlay */}
+      <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setMobileMenuOpen(false)}>
+        <aside
+          className={`absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl flex flex-col p-8 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center mb-10">
+            <div className="flex items-center gap-3">
+              <div className="size-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined text-[24px]">account_balance</span>
+              </div>
+              <h2 className="font-black text-lg text-gray-900">{globalSettings.portalName}</h2>
+            </div>
+            <button onClick={() => setMobileMenuOpen(false)} className="material-symbols-outlined text-gray-400 hover:text-red-500">close</button>
+          </div>
+
+          <nav className="flex flex-col gap-2">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Navegação Principal</p>
+            <button
+              onClick={() => { setView('HOME'); setMobileMenuOpen(false); }}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all ${view === 'HOME' ? 'bg-primary text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <span className="material-symbols-outlined">home</span> Início
+            </button>
+            <button
+              onClick={() => { handleTransparency(); setMobileMenuOpen(false); }}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all ${view === 'TRANSPARENCY' ? 'bg-primary text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <span className="material-symbols-outlined">visibility</span> Transparência
+            </button>
+            <button
+              onClick={() => { handleServices(); setMobileMenuOpen(false); }}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all ${view === 'SERVICES' ? 'bg-primary text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <span className="material-symbols-outlined">grid_view</span> Serviços
+            </button>
+            <button
+              onClick={() => { handleHelp(); setMobileMenuOpen(false); }}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all ${view === 'HELP' ? 'bg-primary text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+            >
+              <span className="material-symbols-outlined">help</span> Ajuda
+            </button>
+
+            {authenticatedUser && (
+              <>
+                <div className="h-px bg-gray-100 my-4"></div>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-4">Área do Cidadão</p>
+                <button
+                  onClick={() => { handleReports(); setMobileMenuOpen(false); }}
+                  className={`flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all ${view === 'REPORTS' ? 'bg-primary text-white shadow-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+                >
+                  <span className="material-symbols-outlined">description</span> Minhas Manifestações
+                </button>
+                {(authenticatedUser.role === 'admin' || authenticatedUser.role === 'attendant') && (
+                  <button
+                    onClick={() => { setView('ADMIN_DASHBOARD'); setMobileMenuOpen(false); }}
+                    className="flex items-center gap-4 px-4 py-3 rounded-xl font-bold text-primary hover:bg-primary/5 border border-primary/20"
+                  >
+                    <span className="material-symbols-outlined">shield_person</span> Painel Administrativo
+                  </button>
+                )}
+              </>
+            )}
+          </nav>
+
+          <div className="mt-auto pt-6 border-t border-gray-100">
+            {!authenticatedUser ? (
+              <button
+                onClick={() => { handleLogin(); setMobileMenuOpen(false); }}
+                className="w-full flex items-center justify-center gap-3 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl active:scale-95 transition-all"
+              >
+                <span className="material-symbols-outlined">login</span> Entrar no Sistema
+              </button>
+            ) : (
+              <button
+                onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                className="w-full flex items-center justify-center gap-3 py-4 bg-red-50 text-red-600 font-bold rounded-2xl hover:bg-red-100 transition-all"
+              >
+                <span className="material-symbols-outlined">logout</span> Sair da Conta
+              </button>
+            )}
+          </div>
+        </aside>
+      </div>
 
       {/* VIEW ROUTING */}
       <main id="main-content">
@@ -667,6 +759,29 @@ function App() {
             type={toast.type}
             onClose={() => setToast(null)}
           />
+        )}
+
+        {/* Maintenance Mode Overlay */}
+        {globalSettings.maintenanceMode && (!authenticatedUser || authenticatedUser.role === 'citizen') && (
+          <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[999] flex flex-col items-center justify-center p-8 text-center">
+            <div className="size-24 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-6 animate-pulse">
+              <span className="material-symbols-outlined text-5xl">engineering</span>
+            </div>
+            <h2 className="text-4xl font-black text-gray-900 mb-2">{globalSettings.portalName}</h2>
+            <h3 className="text-xl font-bold text-red-600 mb-6 uppercase tracking-widest">Portal em Manutenção</h3>
+            <p className="text-gray-600 max-w-md leading-relaxed">
+              Estamos realizando melhorias técnicas no sistema. O acesso para cidadãos está temporariamente suspenso para garantir a integridade dos dados e uma melhor experiência futura.
+            </p>
+            <div className="mt-10 pt-10 border-t border-gray-100 w-full max-w-xs">
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Previsão de Retorno</p>
+              <p className="text-sm font-black text-gray-900 mt-1">Hoje às 22:00h</p>
+            </div>
+
+            {/* Admin bypass info */}
+            <p className="mt-8 text-[10px] text-gray-400 font-medium italic">
+              Administradores e Atendentes ainda podem acessar via login direto para testes.
+            </p>
+          </div>
         )}
       </main>
     </div>

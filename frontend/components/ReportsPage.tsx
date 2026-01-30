@@ -37,27 +37,32 @@ const ReportsPage: React.FC<ReportsPageProps> = ({ onBack, authenticatedUser }) 
                         {reports.map((report, idx) => (
                             <div
                                 key={idx}
-                                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:border-primary transition-all"
+                                className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between cursor-pointer hover:border-primary transition-all gap-4"
                                 onClick={() => setSelectedManifestation(report)}
                             >
-                                <div className="flex items-center gap-6">
-                                    <div className="size-16 rounded-xl bg-blue-50 text-blue-600 flex flex-col items-center justify-center font-black text-center px-1">
-                                        <span className="text-[10px] uppercase opacity-60">Tipo</span>
-                                        <span className="text-[10px] break-words">{report.type}</span>
+                                <div className="flex items-start md:items-center gap-4 md:gap-6">
+                                    <div className="size-14 md:size-16 shrink-0 rounded-xl bg-blue-50 text-blue-600 flex flex-col items-center justify-center font-black text-center px-1">
+                                        <span className="text-[8px] md:text-[10px] uppercase opacity-60">Tipo</span>
+                                        <span className="text-[9px] md:text-[10px] leading-tight uppercase">{report.type}</span>
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-900">{report.subject}</h3>
-                                        <div className="flex gap-4 mt-1">
-                                            <span className="text-sm text-gray-500">{report.date}</span>
-                                            <span className="text-sm text-gray-500 font-mono">• {report.protocol}</span>
+                                    <div className="min-w-0 flex-1">
+                                        <h3 className="text-lg md:text-xl font-bold text-gray-900 truncate">{report.subject}</h3>
+                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                                            <span className="text-xs md:text-sm text-gray-400 font-medium">{report.date}</span>
+                                            <span className="hidden md:inline size-1 bg-gray-200 rounded-full"></span>
+                                            <span className="text-xs md:text-sm text-gray-500 font-mono font-bold">{report.protocol}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-700">
+                                <div className="flex items-center justify-between md:justify-end gap-4 mt-2 md:mt-0 pt-3 md:pt-0 border-t border-gray-50 md:border-0">
+                                    <span className={`px-3 py-1 rounded-full text-[10px] md:text-xs font-black uppercase tracking-wider ${report.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
+                                            report.status === 'RECUSADO' ? 'bg-red-100 text-red-700' :
+                                                report.status === 'EM ANDAMENTO' ? 'bg-blue-100 text-blue-700' :
+                                                    'bg-yellow-100 text-yellow-700'
+                                        }`}>
                                         {report.status}
                                     </span>
-                                    <span className="material-symbols-outlined text-gray-400">chevron_right</span>
+                                    <span className="material-symbols-outlined text-gray-300 md:text-gray-400">chevron_right</span>
                                 </div>
                             </div>
                         ))}
