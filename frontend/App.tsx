@@ -528,7 +528,7 @@ function App() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
                 {/* Card Denúncia */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.DENUNCIA)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <button onClick={() => handleStartManifestation(TipoManifestacao.DENUNCIA)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left">
                   <div className="size-14 rounded-full bg-red-50 text-red-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <span className="material-symbols-outlined text-[32px]">warning</span>
                   </div>
@@ -537,10 +537,10 @@ function App() {
                   <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
                     Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
                   </div>
-                </div>
+                </button>
 
                 {/* Card Reclamação */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.RECLAMACAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <button onClick={() => handleStartManifestation(TipoManifestacao.RECLAMACAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left">
                   <div className="size-14 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <span className="material-symbols-outlined text-[32px]">thumb_down</span>
                   </div>
@@ -549,10 +549,10 @@ function App() {
                   <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
                     Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
                   </div>
-                </div>
+                </button>
 
                 {/* Card Sugestão */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.SUGESTAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <button onClick={() => handleStartManifestation(TipoManifestacao.SUGESTAO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left">
                   <div className="size-14 rounded-full bg-blue-50 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <span className="material-symbols-outlined text-[32px]">lightbulb</span>
                   </div>
@@ -561,10 +561,10 @@ function App() {
                   <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
                     Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
                   </div>
-                </div>
+                </button>
 
                 {/* Card Elogio */}
-                <div onClick={() => handleStartManifestation(TipoManifestacao.ELOGIO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <button onClick={() => handleStartManifestation(TipoManifestacao.ELOGIO)} className="cursor-pointer group flex flex-col bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left">
                   <div className="size-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <span className="material-symbols-outlined text-[32px]">thumb_up</span>
                   </div>
@@ -573,7 +573,7 @@ function App() {
                   <div className="flex items-center text-primary font-bold text-sm mt-auto group-hover:underline">
                     Iniciar registro <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
                   </div>
-                </div>
+                </button>
 
               </div>
             </div>
@@ -809,19 +809,19 @@ function App() {
               <div>
                 <h4 className="font-bold text-gray-900 mb-6">Serviços</h4>
                 <ul className="flex flex-col gap-3 text-gray-600 text-sm">
-                  <li><a className="hover:text-primary cursor-pointer" onClick={() => handleStartManifestation()}>Registrar Manifestação</a></li>
-                  <li><a className="hover:text-primary cursor-pointer" onClick={handleBackToHome}>Acompanhar Protocolo</a></li>
-                  <li><a className="hover:text-primary cursor-pointer" onClick={handleTransparency}>Painel da Transparência</a></li>
-                  <li><a className="hover:text-primary cursor-pointer" onClick={handleServiceCharter}>Carta de Serviços</a></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={() => handleStartManifestation()}>Registrar Manifestação</button></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={handleBackToHome}>Acompanhar Protocolo</button></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={handleTransparency}>Painel da Transparência</button></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={handleServiceCharter}>Carta de Serviços</button></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold text-gray-900 mb-6">Ajuda & Suporte</h4>
                 <ul className="flex flex-col gap-3 text-gray-600 text-sm">
-                  <li><a className="hover:text-primary cursor-pointer" onClick={handleHelp}>Perguntas Frequentes</a></li>
-                  <li><a className="hover:text-primary cursor-pointer" onClick={handleHowItWorks}>Manual do Usuário</a></li>
-                  <li><a className="hover:text-primary" href="#">Política de Privacidade</a></li>
-                  <li><a className="hover:text-primary" href="#">Termos de Uso</a></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={handleHelp}>Perguntas Frequentes</button></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={handleHowItWorks}>Manual do Usuário</button></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={(e) => e.preventDefault()}>Política de Privacidade</button></li>
+                  <li><button className="hover:text-primary cursor-pointer text-left" onClick={(e) => e.preventDefault()}>Termos de Uso</button></li>
                 </ul>
               </div>
             </div>
