@@ -66,6 +66,20 @@ npm run dev
 
 ---
 
+## � Perfis de Acesso (Demonstração)
+
+Para testar as interfaces restritas, utilize as seguintes credenciais:
+
+### **Administrador**
+- **CPF**: `00000000000`
+- **Senha**: `kl`
+
+### **Atendente**
+- **CPF**: `00000000002`
+- **Senha**: `1`
+
+---
+
 ## 🛠️ Tecnologias Utilizadas
 
 **Frontend:**
