@@ -614,6 +614,7 @@ function App() {
             onGoToReports={handleReports}
             onGoToOpenData={handleOpenData}
             onGoToServiceCharter={handleServiceCharter}
+            highContrast={highContrast}
           />
         )}
 
