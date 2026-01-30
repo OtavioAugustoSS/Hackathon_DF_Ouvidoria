@@ -19,7 +19,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         tipo_manifestacao: initialType || TipoManifestacao.RECLAMACAO,
         assunto: '',
         conteudo_texto: '',
-        nome: authenticatedUser?.username || '',
+        nome: authenticatedUser?.name || '',
         cpf: authenticatedUser?.cpf || '',
         email: '',
         telefone: '',
@@ -226,32 +226,68 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
         setLoading(true);
         setError('');
 
-        // Simulate local storage since we are offline
-        const protocolNumber = 'PROT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        try {
+            const formDataToSend = new FormData();
 
-        const newManifestation: Manifestation = {
-            protocol: protocolNumber,
-            type: formData.tipo_manifestacao,
-            subject: formData.assunto || 'Geral',
-            content: formData.conteudo_texto,
-            ownerCpf: anonymous ? undefined : (authenticatedUser?.cpf || formData.cpf),
-            date: new Date().toLocaleDateString('pt-BR'),
-            status: 'EM ANÁLISE',
-            local: formData.local_ocorrencia,
-            isAnonymous: anonymous,
-            attachment: file ? {
-                name: file.name,
-                type: file.type,
-                url: mediaPreview || '' // mediaPreview holds the blob URL for all types in this component
-            } : undefined
-        };
+            // Append basic fields
+            formDataToSend.append('tipo_manifestacao', formData.tipo_manifestacao);
+            formDataToSend.append('assunto', formData.assunto);
+            formDataToSend.append('conteudo_texto', formData.conteudo_texto);
+            formDataToSend.append('is_anonimo', String(anonymous)); // Backend expects boolean or string rep? Pydantic can handle 'true'/'false'
 
-        userStore.saveManifestation(newManifestation);
+            // Append optional fields only if they have values and not anonymous (backend handles cleaning too but good to be safe)
+            if (!anonymous) {
+                if (formData.nome) formDataToSend.append('nome', formData.nome);
+                if (formData.cpf) formDataToSend.append('cpf', formData.cpf);
+                if (formData.email) formDataToSend.append('email', formData.email);
+                if (formData.telefone) formDataToSend.append('telefone', formData.telefone);
+            }
 
-        setSuccessData({ protocolo: protocolNumber });
-        setLoading(false);
-        setAriaMsg('Manifestação enviada com sucesso. Protocolo gerado.');
-        window.scrollTo(0, 0);
+            // Append location data
+            if (formData.local_ocorrencia) formDataToSend.append('local_ocorrencia', formData.local_ocorrencia);
+            if (formData.data_ocorrencia) formDataToSend.append('data_ocorrencia', formData.data_ocorrencia);
+
+            // Append file
+            if (file) {
+                formDataToSend.append('arquivo', file);
+            }
+
+            // --- REAL API CALL ---
+            const response = await api.post('/manifestacao/nova-manifestacao', formDataToSend);
+            const data = response.data;
+
+            // Save to local store just for local history if needed, but the source of truth is now the server return
+            const newManifestation: Manifestation = {
+                protocol: data.protocolo,
+                type: data.tipo_manifestacao as TipoManifestacao,
+                subject: data.assunto,
+                content: data.conteudo_texto,
+                ownerCpf: anonymous ? undefined : data.cpf,
+                date: new Date(data.created_at || Date.now()).toLocaleDateString('pt-BR'),
+                status: data.status,
+                local: data.local_ocorrencia,
+                isAnonymous: data.is_anonimo,
+                // Attachment URL would come from server in a real scenario, here we use local preview for UX
+                attachment: file ? {
+                    name: file.name,
+                    type: file.type,
+                    url: mediaPreview || ''
+                } : undefined
+            };
+            userStore.saveManifestation(newManifestation);
+
+            setSuccessData({ protocolo: data.protocolo });
+            setAriaMsg(`Manifestação enviada com sucesso protocolado como ${data.protocolo}.`);
+            window.scrollTo(0, 0);
+
+        } catch (err: any) {
+            console.error(err);
+            const msg = err.response?.data?.detail || "Erro ao conectar com o servidor. Verifique sua conexão.";
+            setError(msg);
+            showToast(msg, 'error');
+        } finally {
+            setLoading(false);
+        }
     };
 
     // --- Render Success ---
@@ -307,7 +343,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                     <p className="text-xs text-red-500 font-bold mt-2">Campos marcados com (*) são de preenchimento obrigatório.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
+                    {/* Hack to prevent browser autofill from thinking this is a login form */}
+                    <input type="text" name="prevent_autofill_id" style={{ display: 'none' }} />
+                    <input type="password" name="prevent_autofill_password" style={{ display: 'none' }} />
+                    <input type="text" name="fake_usernameremembered" style={{ display: 'none' }} />
 
                     {/* 1. Anonymous Toggle */}
                     <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -339,19 +379,19 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="col-span-1 md:col-span-2">
                                     <label htmlFor="nome" className="block text-sm font-semibold text-gray-700 mb-2">Nome Completo <span className="text-red-500">*</span></label>
-                                    <input required id="nome" type="text" name="nome" value={formData.nome} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Ex: Maria Silva" />
+                                    <input required id="nome" type="text" name="nome" autoComplete="new-password" value={formData.nome} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Ex: Maria Silva" />
                                 </div>
                                 <div>
                                     <label htmlFor="cpf" className="block text-sm font-semibold text-gray-700 mb-2">CPF <span className="text-red-500">*</span></label>
-                                    <input required id="cpf" type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="000.000.000-00" />
+                                    <input required id="cpf" type="text" name="cpf" autoComplete="new-password" value={formData.cpf} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="000.000.000-00" />
                                 </div>
                                 <div>
-                                    <label htmlFor="telefone" className="block text-sm font-semibold text-gray-700 mb-2">Telefone</label>
-                                    <input id="telefone" type="tel" name="telefone" value={formData.telefone} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="(61) 90000-0000" />
+                                    <label htmlFor="telefone" className="block text-sm font-semibold text-gray-700 mb-2">Telefone <span className="text-red-500">*</span></label>
+                                    <input required id="telefone" type="tel" name="telefone" autoComplete="off" readOnly onFocus={(e) => e.target.removeAttribute('readonly')} value={formData.telefone} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="(61) 90000-0000" />
                                 </div>
                                 <div className="col-span-1 md:col-span-2">
-                                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">E-mail</label>
-                                    <input id="email" type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="nome@email.com" />
+                                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">E-mail <span className="text-red-500">*</span></label>
+                                    <input required id="email" type="email" name="email" autoComplete="off" readOnly onFocus={(e) => e.target.removeAttribute('readonly')} value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="nome@email.com" />
                                 </div>
                             </div>
                         </div>
@@ -553,12 +593,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         <div className="mb-6">
                             <label htmlFor="conteudo_texto" className="block text-sm font-semibold text-gray-700 mb-2">
                                 {initialChannel === 'TEXT' ? 'Descrição do Ocorrido' : 'Observações Adicionais (Opcional)'}
-                                <span className="text-red-500">*</span>
+                                {initialChannel === 'TEXT' && <span className="text-red-500">*</span>}
                             </label>
                             <textarea
                                 id="conteudo_texto"
                                 name="conteudo_texto"
-                                required
+                                required={initialChannel === 'TEXT'}
                                 value={formData.conteudo_texto}
                                 onChange={handleInputChange}
                                 rows={initialChannel === 'TEXT' ? 8 : 3}

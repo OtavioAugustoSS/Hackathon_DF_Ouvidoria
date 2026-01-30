@@ -89,7 +89,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
+          {/* Honeypot to prevent autofill leakage */}
+          <input type="text" name="prevent_autofill_id" style={{ display: 'none' }} />
+          <input type="password" name="prevent_autofill_password" style={{ display: 'none' }} />
+          <input type="text" name="fake_usernameremembered" style={{ display: 'none' }} />
+
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 ml-1">CPF</label>
             <div className="relative">
@@ -101,6 +106,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
                 placeholder="000.000.000-00"
                 value={loginIdentifier}
                 onChange={handleLoginChange}
+                autoComplete="off"
+                name="user_login_cpf_unique"
+                readOnly
+                onFocus={(e) => e.target.removeAttribute('readonly')}
               />
             </div>
           </div>
@@ -117,6 +126,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
                   placeholder="Seu nome completo"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
+                  autoComplete="off"
+                  name="user_register_fullname_unique"
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute('readonly')}
                 />
               </div>
             </div>
@@ -133,6 +146,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                name="user_password_unique"
+                readOnly
+                onFocus={(e) => e.target.removeAttribute('readonly')}
               />
               <button
                 type="button"
@@ -155,7 +172,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
             {isRegistering ? 'Já tem uma conta?' : 'Não tem uma conta?'}{' '}
             <button
               type="button"
-              onClick={() => setIsRegistering(!isRegistering)}
+              onClick={() => {
+                setIsRegistering(!isRegistering);
+                setLoginIdentifier(''); // Clear state on toggle
+                setPassword('');
+                setFullName('');
+              }}
               className="font-bold text-primary hover:text-primary-dark transition-colors"
             >
               {isRegistering ? 'Entre aqui' : 'Cadastre-se'}

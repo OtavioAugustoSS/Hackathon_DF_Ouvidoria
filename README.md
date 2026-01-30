@@ -1,101 +1,103 @@
-# Participa DF - Ouvidoria PWA 🏛️
+# 1º Hackathon em Controle Social - Desafio Participa DF
+## Solução - Categoria Ouvidoria
 
-## 📢 Sobre o Projeto
-**Participa DF** é a evolução da comunicação entre o cidadão e o Governo do Distrito Federal. Desenvolvida para o Hackathon "Participa DF", esta plataforma de Ouvidoria foca na **experiência do usuário (UX)**, **transparência** e **acessibilidade universal**.
-
-Ao contrário de formulários tradicionais, o Participa DF oferece uma abordagem **multicanal**, permitindo que o cidadão registre manifestações por texto, áudio ou vídeo, de forma intuitiva e inclusiva, garantindo que todas as vozes sejam ouvidas, independentemente de barreiras físicas ou tecnológicas.
+Bem-vindo ao repositório da solução desenvolvida para a categoria **Ouvidoria** do Desafio Participa DF. Esta aplicação é um **PWA (Progressive Web App)** moderno, focado em acessibilidade, usabilidade e integração inovadora com Inteligência Artificial para análise de sentimentos.
 
 ---
 
-## 🚀 Tecnologias e Inovações
+## 🚀 Como Rodar o Projeto
 
-A solução foi construída com um stack moderno para garantir performance, escalabilidade e facilidade de uso:
+Prezamos pela simplicidade de execução para facilitar a avaliação. Não é necessário instalar bancos de dados externos complexos. A solução utiliza **SQLite** nativo.
 
-*   **Frontend Interativo**:
-    *   **React 19 + Vite**: Performance extrema e carregamento instantâneo.
-    *   **Tailwind CSS**: Design system responsivo e visualmente impactante.
-    *   **MediaRecorder API**: Gravação nativa de áudio e vídeo diretamente no navegador.
-    *   **PWA (Progressive Web App)**: Funciona offline, instalável no celular e leve.
+### Pré-requisitos
+- **Node.js** (versão 18+ recomendada)
+- **Python** (versão 3.9+ recomendada)
 
-*   **Backend Robusto**:
-    *   **FastAPI (Python)**: API assíncrona de alta performance.
-    *   **Clean Architecture**: Código organizado, testável e fácil de manter.
-    *   **MySQL/SQLite**: Persistência de dados segura e confiável.
+### Passo a Passo
 
----
-
-## 🏆 Destaques da Solução
-
-### ♿ Acessibilidade (WCAG 2.1 AA)
-O projeto nasceu inclusivo. Cada componente foi auditado para garantir:
-*   Contraste adequado para baixa visão (mínimo 4.5:1).
-*   Navegação completa por teclado e link de "pular conteúdo".
-*   Feedback em tempo real via `aria-live` para gravações de mídia.
-*   Uso rigoroso de `aria-labels` e atributos semânticos para leitores de tela.
-*   Integração nativa com **V-Libras**.
-
-### 🏗️ Arquitetura e Qualidade
-Construído sob os princípios de **Clean Architecture** no backend e **Component-Based Design** no frontend, garantindo:
-*   **Baixo Acoplamento**: Separação clara entre lógica de negócio (services) e UI.
-*   **Coesão**: Componentes especializados e reutilizáveis.
-*   **Boas Práticas**: Tipagem forte com TypeScript, tratamento de erros e Clean Code.
-
-## 📺 Demonstração (Vídeo)
-
-[Assista ao vídeo da solução em funcionamento aqui (Link do Drive/YouTube)](https://github.com/OtavioAugustoSS/Hackathon_DF_Ouvidoria)
-> *Duração: Até 7 minutos. Cobre o fluxo completo, multicanalidade e acessibilidade.*
-
-### 🤖 Integração com IA IZA
-Preparado para o futuro, o Participa DF foi arquitetado para integração com a **IA IZA**. A estrutura de dados já prevê o processamento de linguagem natural para classificação automática de manifestações e análise de sentimento, agilizando o encaminhamento para os órgãos responsáveis.
-
----
-
-## ⚖️ Licença e Propriedade Intelectual
-
-Este projeto está sob a licença **MIT**. As bibliotecas de terceiros utilizadas (React, FastAPI, Tailwind, etc.) são de código aberto sob licenças permissivas. 
-As imagens e ícones utilizados seguem os princípios de livre uso ou são links para serviços oficiais.
-
----
-
-## 🛠️ Como Rodar o Projeto
-
-Siga os passos abaixo para executar a aplicação completa em seu ambiente local.
-
-### 1. Backend (API)
-
-Abra um terminal na pasta `backend`:
+#### 1. Backend (API & IA)
+Abra um terminal na pasta raiz e entre na pasta `backend`:
 
 ```bash
-# 1. Crie o ambiente virtual
-python -m venv venv
+cd backend
+```
 
-# 2. Ative o ambiente virtual
-# Windows:
-venv\Scripts\activate
-# Linux/Mac:
-# source venv/bin/activate
-
-# 3. Instale as dependências
+Instale as dependências:
+```bash
 pip install -r requirements.txt
+```
 
-# 4. Inicie o servidor
+Execute o servidor (ele criará o banco de dados `participa_df.db` automaticamente):
+```bash
 uvicorn main:app --reload
 ```
-O servidor iniciará em `http://localhost:8000`.
+*O backend rodará em `http://127.0.0.1:8000`.*
 
-### 2. Frontend (Aplicação Web/PWA)
-
-Abra outro terminal na raiz do projeto (onde está o `package.json`):
+#### 2. Frontend (PWA)
+Abra **outro terminal** na pasta raiz (mantendo o backend rodando):
 
 ```bash
-# 1. Instale as dependências
 npm install
+```
 
-# 2. Inicie o servidor de desenvolvimento
+Execute a aplicação:
+```bash
 npm run dev
 ```
-Acesse a aplicação em `http://localhost:3000`.
+*O frontend rodará em `http://localhost:3000` (ou porta similar indicada no terminal).*
 
 ---
 
-*Participa DF: Sua voz constrói a cidade. 🏙️*
+## 📋 Funcionalidades Principais
+
+### Acessibilidade & Multicanalidade (WCAG 2.1 AA)
+- **Envio de Relatos Multimídia**: O cidadão pode registrar manifestações por **Texto**, **Áudio** (gravador integrado), **Vídeo** (câmera integrada) ou **Upload de Arquivos**.
+- **Design Inclusivo**: Alto contraste, navegação por teclado e suporte a leitores de tela (`aria-labels`, `live regions`).
+- **PWA (Progressive Web App)**: Pode ser instalado no celular ou desktop, funcionando como um aplicativo nativo.
+
+### Integração com IA IZA
+- **Análise Automática**: Ao receber uma manifestação, o backend aciona o módulo `iza_ai.py`.
+- **Detecção de Sentimento**: A IA analisa o texto do relato para classificar o sentimento (Positivo, Negativo, Neutro) e identificar tópicos urgentes (ex: "buraco", "lixo"), priorizando o atendimento.
+- **Anonimato Seguro**: Opção de envio anônimo que garante que dados pessoais não sejam persistidos se o cidadão optar pelo sigilo.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+**Frontend:**
+- **React 19** + **TypeScript**: Robustez e modernidade.
+- **Vite**: Build tool ultrarrápida.
+- **TailwindCSS**: Estilização responsiva e acessível.
+- **VitePWA**: Configuração para funcionamento offline/app.
+
+**Backend:**
+- **FastAPI (Python)**: Alta performance para APIs assíncronas.
+- **SQLAlchemy (SQLite)**: Gerenciamento eficiente e simples de dados.
+- **Pydantic**: Validação rigorosa de dados.
+
+---
+
+## 📹 Vídeo de Demonstração
+
+[Link para o Vídeo de Demonstração (YouTube/Vimeo)]
+*Insira aqui o link final do vídeo conforme exigido no item 8.2.2-III do edital.*
+
+---
+
+## 📄 Estrutura de Arquivos
+
+```
+/backend
+  /app
+    /services/iza_ai.py  # Módulo de Inteligência Artificial
+    /api                 # Endpoints da API
+    /models              # Modelos do Banco de Dados
+  main.py                # Ponto de entrada do servidor
+/frontend
+  /components            # Componentes React (ReportForm, etc.)
+  /services              # Integração com API
+README.md                # Este arquivo
+```
+
+---
+*Desenvolvido com foco na cidadania e transparência.*
