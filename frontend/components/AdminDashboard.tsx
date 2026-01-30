@@ -7,9 +7,10 @@ interface AdminDashboardProps {
     onBack: () => void;
     authenticatedUser: User;
     showToast: (message: string, type: ToastType) => void;
+    highContrast?: boolean;
 }
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUser, showToast }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUser, showToast, highContrast = false }) => {
     const [activeTab, setActiveTab] = useState<'manifestations' | 'attendants' | 'citizens' | 'configs'>('manifestations');
     const [selectedManifestation, setSelectedManifestation] = useState<Manifestation | null>(null);
     const [selectedCitizen, setSelectedCitizen] = useState<User | null>(null);
@@ -148,20 +149,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
     };
 
     return (
-        <div className="min-h-screen bg-white flex">
+        <div className={`min-h-screen flex ${highContrast ? 'bg-black' : 'bg-white'}`}>
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-100 flex flex-col pt-8">
+            <aside className={`w-64 border-r flex flex-col pt-8 ${highContrast ? 'bg-black border-yellow-400' : 'bg-white border-gray-100'}`}>
                 <div className="px-6 mb-10 flex items-center gap-3">
-                    <div className="size-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                    <div className={`size-10 rounded-lg flex items-center justify-center ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-primary/10 text-primary'}`}>
                         <span className="material-symbols-outlined text-[24px]">shield_person</span>
                     </div>
-                    <h2 className="font-black text-lg text-gray-900 tracking-tight">Gestão Participa</h2>
+                    <h2 className={`font-black text-lg tracking-tight ${highContrast ? 'text-yellow-400' : 'text-gray-900'}`}>Gestão Participa</h2>
                 </div>
 
                 <nav className="flex-1 px-4 space-y-2">
                     <button
                         onClick={() => setActiveTab('manifestations')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'manifestations' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'manifestations' ? (highContrast ? 'bg-yellow-400 text-black border-2 border-white' : 'bg-primary text-white shadow-lg shadow-primary/20') : (highContrast ? 'text-yellow-400 hover:bg-gray-900 hover:border-yellow-400 border border-transparent' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100')}`}
                     >
                         <span className="material-symbols-outlined">description</span>
                         Manifestações
@@ -170,14 +171,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                         <>
                             <button
                                 onClick={() => setActiveTab('attendants')}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'attendants' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'attendants' ? (highContrast ? 'bg-yellow-400 text-black border-2 border-white' : 'bg-primary text-white shadow-lg shadow-primary/20') : (highContrast ? 'text-yellow-400 hover:bg-gray-900 hover:border-yellow-400 border border-transparent' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100')}`}
                             >
                                 <span className="material-symbols-outlined">badge</span>
                                 Atendentes
                             </button>
                             <button
                                 onClick={() => setActiveTab('citizens')}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'citizens' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'citizens' ? (highContrast ? 'bg-yellow-400 text-black border-2 border-white' : 'bg-primary text-white shadow-lg shadow-primary/20') : (highContrast ? 'text-yellow-400 hover:bg-gray-900 hover:border-yellow-400 border border-transparent' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100')}`}
                             >
                                 <span className="material-symbols-outlined">groups</span>
                                 Cidadãos
@@ -186,17 +187,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                     )}
                     <button
                         onClick={() => setActiveTab('configs')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'configs' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'configs' ? (highContrast ? 'bg-yellow-400 text-black border-2 border-white' : 'bg-primary text-white shadow-lg shadow-primary/20') : (highContrast ? 'text-yellow-400 hover:bg-gray-900 hover:border-yellow-400 border border-transparent' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100')}`}
                     >
                         <span className="material-symbols-outlined">settings</span>
                         Configurações
                     </button>
                 </nav>
 
-                <div className="p-6 border-t border-gray-100">
+                <div className={`p-6 border-t ${highContrast ? 'border-yellow-400' : 'border-gray-100'}`}>
                     <button
                         onClick={onBack}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all font-bold text-sm"
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${highContrast ? 'text-yellow-400 hover:bg-gray-900 hover:border hover:border-yellow-400' : 'text-gray-500 hover:text-red-600 hover:bg-red-50'}`}
                     >
                         <span className="material-symbols-outlined">output</span>
                         Voltar ao Site
@@ -208,13 +209,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
             <main className="flex-1 p-8 overflow-y-auto">
                 <header className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900">
+                        <h1 className={`text-3xl font-black ${highContrast ? 'text-white' : 'text-gray-900'}`}>
                             {activeTab === 'manifestations' && 'Todas as Manifestações'}
                             {activeTab === 'attendants' && 'Gestão de Atendentes'}
                             {activeTab === 'citizens' && 'Base de Cidadãos'}
                             {activeTab === 'configs' && 'Configurações do Sistema'}
                         </h1>
-                        <p className="text-gray-500 font-medium">Bem-vindo, {authenticatedUser.name}</p>
+                        <p className={`font-medium ${highContrast ? 'text-yellow-400' : 'text-gray-500'}`}>Bem-vindo, {authenticatedUser.name}</p>
                     </div>
                 </header>
 
@@ -222,38 +223,38 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                     <div className="space-y-6">
                         {/* Summary Stats Bar */}
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total</p>
-                                <p className="text-2xl font-black text-gray-900">{stats.total}</p>
+                            <div className={`p-4 rounded-2xl shadow-sm border ${highContrast ? 'bg-black border-yellow-400 text-yellow-400' : 'bg-white border-gray-100'}`}>
+                                <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Total</p>
+                                <p className={`text-2xl font-black ${highContrast ? 'text-white' : 'text-gray-900'}`}>{stats.total}</p>
                             </div>
-                            <div className="bg-yellow-50 p-4 rounded-2xl border border-yellow-100 shadow-sm">
-                                <p className="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-1">Em Análise</p>
-                                <p className="text-2xl font-black text-yellow-700">{stats.emAnalise}</p>
+                            <div className={`p-4 rounded-2xl shadow-sm border ${highContrast ? 'bg-black border-yellow-400' : 'bg-yellow-50 border-yellow-100'}`}>
+                                <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${highContrast ? 'text-yellow-400' : 'text-yellow-600'}`}>Em Análise</p>
+                                <p className={`text-2xl font-black ${highContrast ? 'text-white' : 'text-yellow-700'}`}>{stats.emAnalise}</p>
                             </div>
-                            <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-sm">
-                                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Em Andamento</p>
-                                <p className="text-2xl font-black text-blue-700">{stats.emAndamento}</p>
+                            <div className={`p-4 rounded-2xl shadow-sm border ${highContrast ? 'bg-black border-yellow-400' : 'bg-blue-50 border-blue-100'}`}>
+                                <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${highContrast ? 'text-yellow-400' : 'text-blue-600'}`}>Em Andamento</p>
+                                <p className={`text-2xl font-black ${highContrast ? 'text-white' : 'text-blue-700'}`}>{stats.emAndamento}</p>
                             </div>
-                            <div className="bg-green-50 p-4 rounded-2xl border border-green-100 shadow-sm">
-                                <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-1">Concluído</p>
-                                <p className="text-2xl font-black text-green-700">{stats.concluido}</p>
+                            <div className={`p-4 rounded-2xl shadow-sm border ${highContrast ? 'bg-black border-yellow-400' : 'bg-green-50 border-green-100'}`}>
+                                <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${highContrast ? 'text-yellow-400' : 'text-green-600'}`}>Concluído</p>
+                                <p className={`text-2xl font-black ${highContrast ? 'text-white' : 'text-green-700'}`}>{stats.concluido}</p>
                             </div>
-                            <div className="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm">
-                                <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-1">Recusado</p>
-                                <p className="text-2xl font-black text-red-700">{stats.recusado}</p>
+                            <div className={`p-4 rounded-2xl shadow-sm border ${highContrast ? 'bg-black border-yellow-400' : 'bg-red-50 border-red-100'}`}>
+                                <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${highContrast ? 'text-yellow-400' : 'text-red-600'}`}>Recusado</p>
+                                <p className={`text-2xl font-black ${highContrast ? 'text-white' : 'text-red-700'}`}>{stats.recusado}</p>
                             </div>
                         </div>
 
                         {/* Filters Panel */}
-                        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 flex flex-wrap gap-4 items-end">
+                        <div className={`p-6 rounded-2xl border flex flex-wrap gap-4 items-end ${highContrast ? 'bg-black border-yellow-400' : 'bg-gray-50 border-gray-200'}`}>
                             <div className="flex-1 min-w-[200px] space-y-1.5">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Pesquisar Protocolo / Assunto / CPF</label>
+                                <label className={`text-[10px] font-black uppercase tracking-widest ml-1 ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Pesquisar Protocolo / Assunto / CPF</label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400 text-sm">search</span>
+                                    <span className={`absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-sm ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>search</span>
                                     <input
                                         type="text"
                                         placeholder="Digite para buscar..."
-                                        className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:border-primary transition-all"
+                                        className={`w-full border rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none transition-all ${highContrast ? 'bg-black border-yellow-400 text-yellow-400 placeholder-yellow-700 focus:bg-black focus:border-yellow-400' : 'bg-white border-gray-200 focus:border-primary'}`}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                     />
@@ -312,7 +313,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                                     setFilterType('');
                                     setFilterLocation('');
                                 }}
-                                className="px-4 py-2.5 text-gray-400 hover:text-red-500 transition-colors font-bold text-xs flex items-center gap-1"
+                                className={`px-4 py-2.5 transition-colors font-bold text-xs flex items-center gap-1 ${highContrast ? 'text-yellow-400 hover:text-white' : 'text-gray-400 hover:text-red-500'}`}
                             >
                                 <span className="material-symbols-outlined text-sm">filter_alt_off</span>
                                 Limpar
@@ -320,35 +321,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                         </div>
 
                         {/* Manifestations Table */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className={`rounded-2xl shadow-sm border overflow-hidden ${highContrast ? 'bg-black border-yellow-400' : 'bg-white border-gray-200'}`}>
                             <table className="w-full text-left">
-                                <thead className="bg-gray-50 border-b border-gray-200">
+                                <thead className={`border-b ${highContrast ? 'bg-black border-yellow-400' : 'bg-gray-50 border-gray-200'}`}>
                                     <tr>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Protocolo</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Tipo</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Assunto</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Local</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Mídia</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Data</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Ações</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Protocolo</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Tipo</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Assunto</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Local</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Status</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider text-center ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Mídia</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Data</th>
+                                        <th className={`px-6 py-4 text-xs font-bold uppercase tracking-wider text-right ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className={`divide-y ${highContrast ? 'divide-yellow-400' : 'divide-gray-100'}`}>
                                     {filteredManifestations.length > 0 ? filteredManifestations.map((m, idx) => (
-                                        <tr key={idx} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setSelectedManifestation(m)}>
-                                            <td className="px-6 py-4 font-mono text-xs font-bold text-gray-600">
+                                        <tr key={idx} className={`transition-colors cursor-pointer ${highContrast ? 'hover:bg-gray-900 border-yellow-400' : 'hover:bg-gray-50'}`} onClick={() => setSelectedManifestation(m)}>
+                                            <td className={`px-6 py-4 font-mono text-xs font-bold ${highContrast ? 'text-white' : 'text-gray-600'}`}>
                                                 {m.protocol}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="px-2 py-1 bg-blue-50 text-primary text-[9px] font-black rounded uppercase tracking-tighter">
+                                                <span className={`px-2 py-1 text-[9px] font-black rounded uppercase tracking-tighter ${highContrast ? 'bg-black text-yellow-400 border border-yellow-400' : 'bg-blue-50 text-primary'}`}>
                                                     {m.type}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-sm font-bold text-gray-900">{m.subject}</td>
-                                            <td className="px-6 py-4 text-xs text-gray-500 font-medium max-w-[120px] truncate">{m.local || 'Não informado'}</td>
+                                            <td className={`px-6 py-4 text-sm font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>{m.subject}</td>
+                                            <td className={`px-6 py-4 text-xs font-medium max-w-[120px] truncate ${highContrast ? 'text-gray-300' : 'text-gray-500'}`}>{m.local || 'Não informado'}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-tighter ${m.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
+                                                <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-tighter ${highContrast
+                                                    ? 'bg-black text-yellow-400 border border-yellow-400'
+                                                    : m.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
                                                         m.status === 'RECUSADO' ? 'bg-red-100 text-red-700' :
                                                             m.status === 'EM ANDAMENTO' ? 'bg-blue-100 text-blue-700' :
                                                                 'bg-yellow-100 text-yellow-700'
@@ -358,7 +361,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 {m.attachment ? (
-                                                    <div className="flex items-center justify-center gap-1 text-primary">
+                                                    <div className={`flex items-center justify-center gap-1 ${highContrast ? 'text-yellow-400' : 'text-primary'}`}>
                                                         <span className="material-symbols-outlined text-[18px]">
                                                             {m.attachment.type.startsWith('image/') ? 'image' :
                                                                 m.attachment.type.startsWith('video/') ? 'movie' :
@@ -369,11 +372,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                                                     <span className="text-[10px] text-gray-300 font-bold uppercase">---</span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-500">{m.date}</td>
+                                            <td className={`px-6 py-4 text-sm ${highContrast ? 'text-gray-300' : 'text-gray-500'}`}>{m.date}</td>
                                             <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                                                 <button
                                                     onClick={() => setSelectedManifestation(m)}
-                                                    className="px-4 py-2 bg-gray-50 text-primary hover:bg-primary hover:text-white rounded-lg text-xs font-black transition-all"
+                                                    className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${highContrast ? 'bg-yellow-400 text-black hover:bg-yellow-300' : 'bg-gray-50 text-primary hover:bg-primary hover:text-white'}`}
                                                 >
                                                     EXAMINAR
                                                 </button>
@@ -471,32 +474,32 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                 )}
 
                 {activeTab === 'citizens' && (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden max-w-4xl">
-                        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-                            <h3 className="font-bold text-gray-900">Base de Cidadãos Cadastrados</h3>
-                            <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">
+                    <div className={`rounded-2xl shadow-sm border overflow-hidden max-w-4xl ${highContrast ? 'bg-black border-yellow-400' : 'bg-white border-gray-200'}`}>
+                        <div className={`px-6 py-4 border-b flex justify-between items-center ${highContrast ? 'bg-black border-yellow-400' : 'bg-gray-50 border-gray-200'}`}>
+                            <h3 className={`font-bold ${highContrast ? 'text-yellow-400' : 'text-gray-900'}`}>Base de Cidadãos Cadastrados</h3>
+                            <span className={`px-3 py-1 text-xs font-bold rounded-full ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-primary/10 text-primary'}`}>
                                 {citizens.length} usuários
                             </span>
                         </div>
-                        <div className="divide-y divide-gray-100">
+                        <div className={`divide-y ${highContrast ? 'divide-yellow-400' : 'divide-gray-100'}`}>
                             {citizens.length > 0 ? citizens.map((c, idx) => (
-                                <div key={idx} className="px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors cursor-pointer group" onClick={() => setSelectedCitizen(c)}>
+                                <div key={idx} className={`px-6 py-4 flex justify-between items-center transition-colors cursor-pointer group ${highContrast ? 'hover:bg-gray-900 border-yellow-400' : 'hover:bg-gray-50'}`} onClick={() => setSelectedCitizen(c)}>
                                     <div className="flex items-center gap-4">
-                                        <div className="size-11 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-black group-hover:bg-primary group-hover:text-white transition-all">
+                                        <div className={`size-11 rounded-full flex items-center justify-center font-black transition-all ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-blue-50 text-blue-600 group-hover:bg-primary group-hover:text-white'}`}>
                                             {c.name?.[0] || 'C'}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-gray-900">{c.name || 'Cidadão sem Nome'}</p>
+                                            <p className={`font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>{c.name || 'Cidadão sem Nome'}</p>
                                             <div className="flex items-center gap-3 mt-0.5">
-                                                <span className="text-xs text-gray-400 font-mono">{c.cpf}</span>
-                                                <span className="size-1 bg-gray-200 rounded-full"></span>
-                                                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 uppercase font-bold tracking-tighter">Login: {c.username}</span>
+                                                <span className={`text-xs font-mono ${highContrast ? 'text-gray-400' : 'text-gray-400'}`}>{c.cpf}</span>
+                                                <span className={`size-1 rounded-full ${highContrast ? 'bg-yellow-400' : 'bg-gray-200'}`}></span>
+                                                <span className={`text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-tighter ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-gray-100 text-gray-500'}`}>Login: {c.username}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button
-                                            className="text-xs font-bold text-primary px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-all"
+                                            className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${highContrast ? 'text-yellow-400 hover:bg-gray-900' : 'text-primary hover:bg-primary/5'}`}
                                         >
                                             Ver Histórico
                                         </button>
@@ -519,36 +522,36 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                         {/* Citizen Detail Modal Overlay */}
                         {selectedCitizen && (
                             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-                                <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-up shadow-2xl">
-                                    <header className="p-6 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                                <div className={`rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-up shadow-2xl ${highContrast ? 'bg-black border-2 border-yellow-400' : 'bg-white'}`}>
+                                    <header className={`p-6 border-b flex justify-between items-center ${highContrast ? 'bg-black border-yellow-400' : 'bg-gray-50 border-gray-100'}`}>
                                         <div className="flex items-center gap-4">
-                                            <div className="size-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-black">
+                                            <div className={`size-14 rounded-full flex items-center justify-center text-xl font-black ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-primary text-white'}`}>
                                                 {selectedCitizen.name?.[0] || 'C'}
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-black text-gray-900">{selectedCitizen.name}</h3>
-                                                <p className="text-sm text-gray-500">{selectedCitizen.cpf}</p>
+                                                <h3 className={`text-xl font-black ${highContrast ? 'text-white' : 'text-gray-900'}`}>{selectedCitizen.name}</h3>
+                                                <p className={`text-sm ${highContrast ? 'text-gray-300' : 'text-gray-500'}`}>{selectedCitizen.cpf}</p>
                                             </div>
                                         </div>
-                                        <button onClick={() => setSelectedCitizen(null)} className="material-symbols-outlined text-gray-400 hover:text-gray-900 transition-colors">close</button>
+                                        <button onClick={() => setSelectedCitizen(null)} className={`material-symbols-outlined transition-colors ${highContrast ? 'text-yellow-400 hover:text-yellow-200' : 'text-gray-400 hover:text-gray-900'}`}>close</button>
                                     </header>
 
                                     <div className="flex-1 overflow-y-auto p-6 space-y-8">
                                         <section>
-                                            <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-4">Ações Rápidas</p>
+                                            <p className={`text-[10px] font-black uppercase tracking-widest mb-4 ${highContrast ? 'text-yellow-400' : 'text-primary'}`}>Ações Rápidas</p>
                                             <div className="grid grid-cols-2 gap-4">
-                                                <button className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all text-left">
-                                                    <span className="material-symbols-outlined text-gray-400">lock_reset</span>
+                                                <button className={`flex items-center gap-3 p-4 rounded-2xl transition-all text-left ${highContrast ? 'bg-black border border-yellow-400 hover:bg-gray-900' : 'bg-gray-50 hover:bg-gray-100'}`}>
+                                                    <span className={`material-symbols-outlined ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>lock_reset</span>
                                                     <div>
-                                                        <p className="text-sm font-bold text-gray-900">Resetar Senha</p>
-                                                        <p className="text-xs text-gray-500">Enviar link de recuperação</p>
+                                                        <p className={`text-sm font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>Resetar Senha</p>
+                                                        <p className={`text-xs ${highContrast ? 'text-gray-400' : 'text-gray-500'}`}>Enviar link de recuperação</p>
                                                     </div>
                                                 </button>
-                                                <button className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all text-left border-2 border-transparent hover:border-red-100 group">
-                                                    <span className="material-symbols-outlined text-gray-400 group-hover:text-red-500">block</span>
+                                                <button className={`flex items-center gap-3 p-4 rounded-2xl transition-all text-left border-2 group ${highContrast ? 'bg-black border-red-500 hover:bg-red-900/20' : 'bg-gray-50 border-transparent hover:border-red-100 hover:bg-gray-100'}`}>
+                                                    <span className={`material-symbols-outlined ${highContrast ? 'text-red-500' : 'text-gray-400 group-hover:text-red-500'}`}>block</span>
                                                     <div>
-                                                        <p className="text-sm font-bold text-gray-900">Suspender Conta</p>
-                                                        <p className="text-xs text-gray-500">Bloquear acesso temporário</p>
+                                                        <p className={`text-sm font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>Suspender Conta</p>
+                                                        <p className={`text-xs ${highContrast ? 'text-gray-400' : 'text-gray-500'}`}>Bloquear acesso temporário</p>
                                                     </div>
                                                 </button>
                                             </div>
@@ -562,22 +565,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
 
                                             <div className="space-y-3">
                                                 {citizenManifestations.length > 0 ? citizenManifestations.map((m, i) => (
-                                                    <div key={i} className="p-4 rounded-2xl border border-gray-100 hover:border-primary/20 transition-all group">
+                                                    <div key={i} className={`p-4 rounded-2xl border transition-all group ${highContrast ? 'bg-black border-yellow-400 hover:border-white' : 'border-gray-100 hover:border-primary/20'}`}>
                                                         <div className="flex justify-between items-start mb-2">
-                                                            <span className="text-[10px] font-black bg-gray-100 px-2 py-1 rounded text-gray-500">{m.protocol}</span>
-                                                            <span className={`text-[9px] font-black px-2 py-1 rounded-full ${m.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'
-                                                                }`}>{m.status}</span>
+                                                            <span className={`text-[10px] font-black px-2 py-1 rounded ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-gray-100 text-gray-500'}`}>{m.protocol}</span>
+                                                            <span className={`text-[9px] font-black px-2 py-1 rounded-full ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : (m.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600')}`}>{m.status}</span>
                                                         </div>
-                                                        <p className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors">{m.subject}</p>
-                                                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">{m.content}</p>
-                                                        <div className="flex items-center gap-2 mt-3 text-[10px] text-gray-400 font-bold">
+                                                        <p className={`font-bold text-sm transition-colors ${highContrast ? 'text-white group-hover:text-yellow-400' : 'text-gray-900 group-hover:text-primary'}`}>{m.subject}</p>
+                                                        <p className={`text-xs mt-1 line-clamp-2 ${highContrast ? 'text-gray-300' : 'text-gray-500'}`}>{m.content}</p>
+                                                        <div className={`flex items-center gap-2 mt-3 text-[10px] font-bold ${highContrast ? 'text-gray-400' : 'text-gray-400'}`}>
                                                             <span className="material-symbols-outlined text-[14px]">calendar_today</span>
                                                             {m.date}
                                                         </div>
                                                     </div>
                                                 )) : (
-                                                    <div className="text-center py-10 bg-gray-50 rounded-2xl">
-                                                        <p className="text-sm text-gray-400 italic">Nenhuma manifestação enviada por este cidadão.</p>
+                                                    <div className={`text-center py-10 rounded-2xl ${highContrast ? 'bg-black border border-yellow-400' : 'bg-gray-50'}`}>
+                                                        <p className={`text-sm italic ${highContrast ? 'text-gray-400' : 'text-gray-400'}`}>Nenhuma manifestação enviada por este cidadão.</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -706,27 +708,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
             {/* Manifestation Detail View (Admin) */}
             {selectedManifestation && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-scale-in">
+                    <div className={`rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-scale-in ${highContrast ? 'bg-black border-2 border-yellow-400' : 'bg-white'}`}>
                         <div className="p-10">
                             <div className="flex justify-between items-start mb-10">
                                 <div>
                                     <div className="flex gap-2 mb-4">
-                                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest">
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-blue-100 text-blue-700'}`}>
                                             {selectedManifestation.type}
                                         </span>
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${selectedManifestation.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
-                                            selectedManifestation.status === 'RECUSADO' ? 'bg-red-100 text-red-700' :
-                                                'bg-yellow-100 text-yellow-700'
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' :
+                                            (selectedManifestation.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
+                                                selectedManifestation.status === 'RECUSADO' ? 'bg-red-100 text-red-700' :
+                                                    'bg-yellow-100 text-yellow-700')
                                             }`}>
                                             {selectedManifestation.status}
                                         </span>
                                     </div>
-                                    <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-none mb-2">{selectedManifestation.subject}</h2>
-                                    <p className="text-gray-400 font-mono text-sm">Nº Protocolo: <span className="text-gray-900 font-bold">{selectedManifestation.protocol}</span></p>
+                                    <h2 className={`text-3xl font-black tracking-tight leading-none mb-2 ${highContrast ? 'text-white' : 'text-gray-900'}`}>{selectedManifestation.subject}</h2>
+                                    <p className={`font-mono text-sm ${highContrast ? 'text-gray-400' : 'text-gray-400'}`}>Nº Protocolo: <span className={`${highContrast ? 'text-white' : 'text-gray-900'} font-bold`}>{selectedManifestation.protocol}</span></p>
                                 </div>
                                 <button
                                     onClick={() => setSelectedManifestation(null)}
-                                    className="p-3 bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all"
+                                    className={`p-3 rounded-2xl transition-all ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400 hover:bg-gray-900' : 'bg-gray-50 hover:bg-gray-100'}`}
                                 >
                                     <span className="material-symbols-outlined">close</span>
                                 </button>
@@ -734,15 +737,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
 
                             <div className="grid md:grid-cols-2 gap-8 mb-10 pb-10 border-b border-gray-100">
                                 <div>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Cidadão</p>
-                                    <p className="text-gray-900 font-bold flex items-center gap-2">
+                                    <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Cidadão</p>
+                                    <p className={`font-bold flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-900'}`}>
                                         <span className="material-symbols-outlined text-gray-300">person</span>
                                         {selectedManifestation.isAnonymous ? 'ANÔNIMO (Identidade Preservada)' : (selectedManifestation.ownerCpf || 'Visitante')}
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Data do Registro</p>
-                                    <p className="text-gray-900 font-bold flex items-center gap-2">
+                                    <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Data do Registro</p>
+                                    <p className={`font-bold flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-900'}`}>
                                         <span className="material-symbols-outlined text-gray-300">calendar_today</span>
                                         {selectedManifestation.date}
                                     </p>
@@ -751,17 +754,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
 
                             <div className="space-y-10">
                                 <div>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Relato da Manifestação</p>
-                                    <div className="p-8 bg-gray-50 rounded-3xl text-gray-700 leading-relaxed text-lg whitespace-pre-wrap border border-gray-100">
+                                    <p className={`text-[10px] font-black uppercase tracking-widest mb-4 ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Relato da Manifestação</p>
+                                    <div className={`p-8 rounded-3xl leading-relaxed text-lg whitespace-pre-wrap border ${highContrast ? 'bg-black border-yellow-400 text-white' : 'bg-gray-50 border-gray-100 text-gray-700'}`}>
                                         {selectedManifestation.content}
                                     </div>
                                 </div>
 
                                 {selectedManifestation.local && (
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Local do Fato</p>
-                                        <p className="text-gray-900 bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 font-bold text-sm">
-                                            <span className="material-symbols-outlined text-primary">location_on</span>
+                                        <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>Local do Fato</p>
+                                        <p className={`p-4 rounded-xl shadow-sm flex items-center gap-3 font-bold text-sm ${highContrast ? 'bg-black border border-yellow-400 text-white' : 'bg-white border border-gray-100 text-gray-900'}`}>
+                                            <span className={`material-symbols-outlined ${highContrast ? 'text-yellow-400' : 'text-primary'}`}>location_on</span>
                                             {selectedManifestation.local}
                                         </p>
                                     </div>
@@ -770,9 +773,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                                 {selectedManifestation.attachment && (
                                     <div>
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 italic">Arquivo Anexo</p>
-                                        <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between">
+                                        <div className={`p-6 rounded-2xl border flex items-center justify-between ${highContrast ? 'bg-black border-yellow-400' : 'bg-gray-50 border-gray-100'}`}>
                                             <div className="flex items-center gap-4">
-                                                <div className="size-16 bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center text-primary">
+                                                <div className={`size-16 rounded-xl shadow-sm border flex items-center justify-center ${highContrast ? 'bg-black border-yellow-400 text-yellow-400' : 'bg-white border-gray-200 text-primary'}`}>
                                                     <span className="material-symbols-outlined text-[32px]">
                                                         {selectedManifestation.attachment.type.startsWith('video/') ? 'movie' :
                                                             selectedManifestation.attachment.type.startsWith('audio/') ? 'mic' :
@@ -780,14 +783,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <p className="text-gray-900 font-black text-sm">{selectedManifestation.attachment.name}</p>
-                                                    <p className="text-gray-400 text-xs uppercase font-bold">{selectedManifestation.attachment.type}</p>
+                                                    <p className={`font-black text-sm ${highContrast ? 'text-white' : 'text-gray-900'}`}>{selectedManifestation.attachment.name}</p>
+                                                    <p className={`text-xs uppercase font-bold ${highContrast ? 'text-gray-400' : 'text-gray-400'}`}>{selectedManifestation.attachment.type}</p>
                                                 </div>
                                             </div>
                                             <a
                                                 href={selectedManifestation.attachment.url}
                                                 download={selectedManifestation.attachment.name}
-                                                className="px-6 py-3 bg-primary text-white font-black rounded-xl text-xs flex items-center gap-2 hover:bg-primary-dark transition-all"
+                                                className={`px-6 py-3 font-black rounded-xl text-xs flex items-center gap-2 transition-all ${highContrast ? 'bg-yellow-400 text-black hover:bg-yellow-300' : 'bg-primary text-white hover:bg-primary-dark'}`}
                                             >
                                                 <span className="material-symbols-outlined text-[18px]">download</span>
                                                 BAIXAR ARQUIVO

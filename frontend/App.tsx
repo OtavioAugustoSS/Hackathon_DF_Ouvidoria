@@ -415,9 +415,9 @@ function App() {
               <div className="layout-container max-w-7xl mx-auto px-4 md:px-8 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                   <div className="flex flex-col gap-6 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 w-fit">
-                      <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-                      <span className="text-xs font-bold text-primary tracking-wide uppercase">Participação Social Ativa</span>
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border w-fit ${highContrast ? 'bg-black border-yellow-400' : 'bg-blue-50 border-blue-100'}`}>
+                      <span className={`flex h-2 w-2 rounded-full animate-pulse ${highContrast ? 'bg-yellow-400' : 'bg-primary'}`}></span>
+                      <span className={`text-xs font-bold tracking-wide uppercase ${highContrast ? 'text-yellow-400' : 'text-primary'}`}>Participação Social Ativa</span>
                     </div>
                     <h1 className="text-gray-900 text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
                       Sua voz constrói um <span className="text-primary">Distrito Federal</span> melhor
@@ -584,6 +584,7 @@ function App() {
           <ChannelSelection
             onBack={handleBackToHome}
             onSelectChannel={handleChannelSelect}
+            highContrast={highContrast}
           />
         )}
 
@@ -594,6 +595,7 @@ function App() {
             initialChannel={selectedChannel}
             authenticatedUser={authenticatedUser}
             showToast={showToast}
+            highContrast={highContrast}
           />
         )}
 
@@ -602,6 +604,7 @@ function App() {
             onBack={handleBackToHome}
             onLoginSuccess={handleLoginSuccess}
             showToast={showToast}
+            highContrast={highContrast}
           />
         )}
 
@@ -615,7 +618,7 @@ function App() {
         )}
 
         {view === 'SERVICES' && (
-          <ServicesPage onBack={handleBackToHome} />
+          <ServicesPage onBack={handleBackToHome} highContrast={highContrast} />
         )}
 
         {view === 'HELP' && (
@@ -650,6 +653,7 @@ function App() {
             onBack={handleBackToHome}
             authenticatedUser={authenticatedUser}
             showToast={showToast}
+            highContrast={highContrast}
           />
         )}
 
@@ -676,8 +680,8 @@ function App() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-gray-100">
                   <div>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 inline-block ${searchedManifestation.status === 'CONCLUÍDO' ? 'bg-green-100 text-green-700' :
-                        searchedManifestation.status === 'EM ANÁLISE' ? 'bg-blue-100 text-blue-700' :
-                          'bg-gray-100 text-gray-700'
+                      searchedManifestation.status === 'EM ANÁLISE' ? 'bg-blue-100 text-blue-700' :
+                        'bg-gray-100 text-gray-700'
                       }`}>
                       {searchedManifestation.status}
                     </span>

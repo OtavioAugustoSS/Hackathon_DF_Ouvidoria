@@ -6,9 +6,10 @@ interface LoginScreenProps {
   onBack: () => void;
   onLoginSuccess: (user: User) => void;
   showToast: (message: string, type: ToastType) => void;
+  highContrast?: boolean;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showToast }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showToast, highContrast = false }) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [loginIdentifier, setLoginIdentifier] = useState('');
   const [fullName, setFullName] = useState('');
@@ -73,16 +74,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+    <div className={`min-h-[70vh] flex items-center justify-center px-4 py-12 ${highContrast ? 'bg-black' : 'bg-gray-50'}`}>
+      <div className={`max-w-md w-full rounded-2xl shadow-xl p-8 border ${highContrast ? 'bg-black border-yellow-400' : 'bg-white border-gray-100'}`}>
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center size-16 bg-primary/10 rounded-full text-primary mb-4">
+          <div className={`inline-flex items-center justify-center size-16 rounded-full mb-4 ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-primary/10 text-primary'}`}>
             <span className="material-symbols-outlined text-[32px]">{isRegistering ? 'person_add' : 'lock'}</span>
           </div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+          <h2 className={`text-3xl font-black tracking-tight ${highContrast ? 'text-yellow-400' : 'text-gray-900'}`}>
             {isRegistering ? 'Criar Conta' : 'Entrar'}
           </h2>
-          <p className="text-gray-500 mt-2">
+          <p className={`mt-2 ${highContrast ? 'text-yellow-400' : 'text-gray-500'}`}>
             {isRegistering
               ? 'Cadastre-se com seu CPF para acompanhar suas manifestações'
               : 'Acesse com seu CPF para acompanhar suas manifestações'}
@@ -96,13 +97,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
           <input type="text" name="fake_usernameremembered" style={{ display: 'none' }} />
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">CPF</label>
+            <label className={`text-sm font-bold ml-1 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>CPF</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">fingerprint</span>
+              <span className={`absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>fingerprint</span>
               <input
                 type="text"
                 required
-                className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
+                className={`w-full h-12 pl-12 pr-4 rounded-xl transition-all outline-none ${highContrast ? 'bg-black text-yellow-400 border-2 border-yellow-400 placeholder-yellow-700 focus:bg-black focus:border-yellow-400' : 'bg-gray-50 border border-gray-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 text-gray-900'}`}
                 placeholder="000.000.000-00"
                 value={loginIdentifier}
                 onChange={handleLoginChange}
@@ -116,13 +117,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
 
           {isRegistering && (
             <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700 ml-1">Nome Completo</label>
+              <label className={`text-sm font-bold ml-1 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Nome Completo</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">person</span>
+                <span className={`absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>person</span>
                 <input
                   type="text"
                   required
-                  className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
+                  className={`w-full h-12 pl-12 pr-4 rounded-xl transition-all outline-none ${highContrast ? 'bg-black text-yellow-400 border-2 border-yellow-400 placeholder-yellow-700 focus:bg-black focus:border-yellow-400' : 'bg-gray-50 border border-gray-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 text-gray-900'}`}
                   placeholder="Seu nome completo"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
@@ -136,13 +137,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
           )}
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">Senha</label>
+            <label className={`text-sm font-bold ml-1 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Senha</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-400">key</span>
+              <span className={`absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined ${highContrast ? 'text-yellow-400' : 'text-gray-400'}`}>key</span>
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full h-12 pl-12 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-gray-900"
+                className={`w-full h-12 pl-12 pr-12 rounded-xl transition-all outline-none ${highContrast ? 'bg-black text-yellow-400 border-2 border-yellow-400 placeholder-yellow-700 focus:bg-black focus:border-yellow-400' : 'bg-gray-50 border border-gray-200 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 text-gray-900'}`}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -163,12 +164,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
 
           <button
             type="submit"
-            className="w-full h-12 bg-primary hover:bg-primary-dark text-white font-black rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5"
+            className={`w-full h-12 font-black rounded-xl shadow-lg transition-all hover:-translate-y-0.5 ${highContrast ? 'bg-yellow-400 text-black border-2 border-white hover:bg-yellow-300' : 'bg-primary hover:bg-primary-dark text-white shadow-primary/20'}`}
           >
             {isRegistering ? 'Cadastrar' : 'Entrar'}
           </button>
 
-          <p className="text-center text-gray-600 text-sm mt-4">
+          <p className={`text-center text-sm mt-4 ${highContrast ? 'text-yellow-400' : 'text-gray-600'}`}>
             {isRegistering ? 'Já tem uma conta?' : 'Não tem uma conta?'}{' '}
             <button
               type="button"
@@ -178,7 +179,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
                 setPassword('');
                 setFullName('');
               }}
-              className="font-bold text-primary hover:text-primary-dark transition-colors"
+              className={`font-bold transition-colors ${highContrast ? 'text-yellow-200 underline' : 'text-primary hover:text-primary-dark'}`}
             >
               {isRegistering ? 'Entre aqui' : 'Cadastre-se'}
             </button>
@@ -188,7 +189,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess, showT
         <div className="mt-8 pt-8 border-t border-gray-100">
           <button
             onClick={onBack}
-            className="w-full h-12 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+            className={`w-full h-12 font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${highContrast ? 'bg-black text-yellow-400 border border-yellow-400 hover:bg-gray-900' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
           >
             <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             Voltar para o Início

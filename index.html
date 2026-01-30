@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html class="light" lang="pt-BR">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Participa DF - Sua voz constrói a cidade</title>
-    
+
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
@@ -42,42 +46,144 @@
         }
 
         /* High Contrast Overrides */
-        .high-contrast, .high-contrast body {
+        .high-contrast,
+        .high-contrast body,
+        .high-contrast main,
+        .high-contrast section,
+        .high-contrast header,
+        .high-contrast footer,
+        .high-contrast div,
+        .high-contrast span,
+        .high-contrast p,
+        .high-contrast h1,
+        .high-contrast h2,
+        .high-contrast h3,
+        .high-contrast h4,
+        .high-contrast h5,
+        .high-contrast h6,
+        .high-contrast label,
+        .high-contrast input,
+        .high-contrast select,
+        .high-contrast textarea,
+        .high-contrast button {
+            /* Base overrides - be careful with specificity */
+        }
+
+        /* Enforce Black Backgrounds */
+        .high-contrast,
+        .high-contrast body,
+        .high-contrast .bg-white,
+        .high-contrast .bg-gray-50,
+        .high-contrast .bg-gray-100,
+        .high-contrast .bg-gray-200,
+        .high-contrast .bg-background-light,
+        .high-contrast .bg-blue-50,
+        .high-contrast .bg-blue-100,
+        .high-contrast .bg-red-50,
+        .high-contrast .bg-green-50,
+        .high-contrast .bg-yellow-50,
+        .high-contrast main {
             background-color: #000 !important;
             color: #fff !important;
         }
-        .high-contrast header, .high-contrast footer, .high-contrast section {
-            background-color: #000 !important;
+
+        /* Borders - Yellow */
+        .high-contrast .border,
+        .high-contrast .border-b,
+        .high-contrast .border-t,
+        .high-contrast .border-gray-100,
+        .high-contrast .border-gray-200,
+        .high-contrast .border-gray-300,
+        .high-contrast .border-blue-100 {
             border-color: #ffff00 !important;
         }
-        .high-contrast .bg-white, .high-contrast .bg-gray-50, .high-contrast .bg-background-light {
-            background-color: #000 !important;
-        }
-        .high-contrast .text-gray-900, .high-contrast .text-gray-600, .high-contrast .text-gray-500, .high-contrast .text-gray-700 {
-            color: #fff !important;
-        }
-        .high-contrast .text-primary, .high-contrast .text-primary-dark {
+
+        /* Text Colors - Yellow for emphasis/links, White for standard */
+        .high-contrast .text-primary,
+        .high-contrast .text-primary-dark,
+        .high-contrast .text-blue-500,
+        .high-contrast .text-blue-600,
+        .high-contrast .text-blue-700,
+        .high-contrast .text-blue-800,
+        .high-contrast .text-blue-900,
+        .high-contrast .text-red-500,
+        .high-contrast .text-red-600,
+        .high-contrast .text-red-700,
+        .high-contrast .text-green-600,
+        .high-contrast .text-green-700,
+        .high-contrast .text-gray-900,
+        .high-contrast .text-gray-700,
+        .high-contrast .text-gray-600,
+        .high-contrast .text-gray-500 {
             color: #ffff00 !important;
         }
-        .high-contrast .bg-primary, .high-contrast .bg-primary-dark {
+
+        .high-contrast .text-white {
+            color: #ffff00 !important;
+            /* Ensure white text on dark bg (if any) also becomes yellow if needed, or stays white. Let's make emphasis yellow. */
+        }
+
+        /* Specific overrides for White text on Buttons */
+        .high-contrast button.bg-primary,
+        .high-contrast button.bg-primary-dark,
+        .high-contrast .bg-primary,
+        .high-contrast .bg-primary-dark {
             background-color: #ffff00 !important;
             color: #000 !important;
+            border: 2px solid #fff !important;
         }
-        .high-contrast button, .high-contrast a {
-            border-color: #ffff00 !important;
-        }
-        .high-contrast .border, .high-contrast .border-b, .high-contrast .border-t {
-            border-color: #ffff00 !important;
-        }
-        .high-contrast .shadow-sm, .high-contrast .shadow-md, .high-contrast .shadow-lg, .high-contrast .shadow-xl {
+
+        /* Ultra-High Specificity for Inputs */
+        .high-contrast input[type="text"],
+        .high-contrast input[type="email"],
+        .high-contrast input[type="tel"],
+        .high-contrast input[type="date"],
+        .high-contrast input[type="password"],
+        .high-contrast textarea,
+        .high-contrast select {
+            background-color: #000 !important;
+            color: #ffff00 !important;
+            border: 2px solid #ffff00 !important;
             box-shadow: none !important;
-            border: 1px solid #ffff00 !important;
         }
+
+        /* Specific fix for the user reported issue */
+        .high-contrast .bg-white,
+        .high-contrast .bg-gray-50,
+        .high-contrast .bg-gray-100,
+        .high-contrast .bg-gray-200 {
+            background-color: #000 !important;
+        }
+
+        .high-contrast p,
+        .high-contrast span,
+        .high-contrast h3,
+        .high-contrast label {
+            color: #ffff00 !important;
+        }
+
+        /* Fix placeholder visibility */
+        .high-contrast input::placeholder,
+        .high-contrast textarea::placeholder {
+            color: #ffff00 !important;
+            opacity: 0.7;
+        }
+
+        /* Fix icons */
+        .high-contrast .material-symbols-outlined {
+            color: #ffff00 !important;
+        }
+
+        /* Remove Shadows / Patterns */
+        .high-contrast .shadow-sm,
+        .high-contrast .shadow-md,
+        .high-contrast .shadow-lg,
+        .high-contrast .shadow-xl {
+            box-shadow: none !important;
+        }
+
         .high-contrast .hero-pattern {
             display: none !important;
-        }
-        .high-contrast span.material-symbols-outlined {
-            color: inherit !important;
         }
     </style>
 
@@ -93,7 +199,9 @@
     }
     </script>
 </head>
-<body class="flex flex-col min-h-screen bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden">
+
+<body
+    class="flex flex-col min-h-screen bg-background-light dark:bg-background-dark font-display antialiased overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
 
@@ -109,4 +217,5 @@
         new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
 </body>
+
 </html>

@@ -10,9 +10,10 @@ interface ReportFormProps {
     initialChannel?: Channel;
     authenticatedUser?: User | null;
     showToast: (message: string, type: ToastType) => void;
+    highContrast?: boolean;
 }
 
-const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialChannel, authenticatedUser, showToast }) => {
+const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialChannel, authenticatedUser, showToast, highContrast = false }) => {
     // Form State
     const [anonymous, setAnonymous] = useState(false);
     const [formData, setFormData] = useState({
@@ -325,7 +326,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
     // --- Render Form ---
     return (
-        <main className="flex-grow bg-[#f8f9fa] py-8 px-4 sm:px-6 lg:px-8 animate-fade-in-up">
+        <main className={`flex-grow py-8 px-4 sm:px-6 lg:px-8 animate-fade-in-up ${highContrast ? 'bg-black' : 'bg-[#f8f9fa]'}`}>
             <div className="max-w-[1000px] mx-auto">
 
                 {/* Breadcrumbs */}
@@ -338,9 +339,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                 </nav>
 
                 <div className="flex flex-col gap-2 mb-8">
-                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Nova Manifestação</h1>
-                    <p className="text-gray-600">Preencha os dados abaixo para registrar sua reclamação, elogio ou sugestão ao Governo do Distrito Federal.</p>
-                    <p className="text-xs text-red-500 font-bold mt-2">Campos marcados com (*) são de preenchimento obrigatório.</p>
+                    <h1 className={`text-3xl font-extrabold tracking-tight ${highContrast ? 'text-yellow-400' : 'text-gray-900'}`}>Nova Manifestação</h1>
+                    <p className={`${highContrast ? 'text-yellow-400' : 'text-gray-600'}`}>Preencha os dados abaixo para registrar sua reclamação, elogio ou sugestão ao Governo do Distrito Federal.</p>
+                    <p className={`text-xs font-bold mt-2 ${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>Campos marcados com (*) são de preenchimento obrigatório.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6" autoComplete="off">
@@ -350,69 +351,69 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                     <input type="text" name="fake_usernameremembered" style={{ display: 'none' }} />
 
                     {/* 1. Anonymous Toggle */}
-                    <div className="bg-white p-6 rounded-xl border border-blue-100 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div className={`p-6 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 ${highContrast ? 'bg-black border border-yellow-400' : 'bg-white border border-blue-100'}`}>
                         <div className="flex items-start gap-4">
-                            <div className="p-3 bg-blue-50 text-primary rounded-lg">
+                            <div className={`p-3 rounded-lg ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400' : 'bg-blue-50 text-primary'}`}>
                                 <span className="material-symbols-outlined text-2xl">visibility_off</span>
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900">Enviar Anonimamente</h3>
-                                <p className="text-sm text-gray-600 mt-1 max-w-md">
+                                <h3 className={`font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>Enviar Anonimamente</h3>
+                                <p className={`text-sm mt-1 max-w-md ${highContrast ? 'text-gray-300' : 'text-gray-600'}`}>
                                     Se ativado, seus dados pessoais não serão coletados e o formulário de identificação será ocultado.
-                                    <span className="block mt-1 text-xs text-blue-600 font-medium italic">As exigências de Nome e CPF são removidas neste modo.</span>
+                                    <span className={`block mt-1 text-xs font-medium italic ${highContrast ? 'text-yellow-400' : 'text-blue-600'}`}>As exigências de Nome e CPF são removidas neste modo.</span>
                                 </p>
                             </div>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} className="sr-only peer" />
-                            <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                            <div className={`w-14 h-7 peer-focus:outline-none peer-focus:ring-4 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all ${highContrast ? 'bg-gray-800 border-2 border-yellow-400 peer-focus:ring-yellow-400/50 peer-checked:bg-yellow-400 peer-checked:after:border-black after:border-gray-500' : 'bg-gray-200 peer-focus:ring-blue-100 after:border-gray-300 after:border peer-checked:bg-primary'}`}></div>
                         </label>
                     </div>
 
                     {/* 2. Personal Information (Conditional) */}
                     {!anonymous && (
-                        <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-                            <div className="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
-                                <span className="material-symbols-outlined text-primary">person</span>
-                                <h3 className="text-lg font-bold text-gray-900">Informações Pessoais</h3>
+                        <div className={`p-8 rounded-xl shadow-sm ${highContrast ? 'bg-black border border-yellow-400' : 'bg-white border border-gray-200'}`}>
+                            <div className={`flex items-center gap-2 mb-6 border-b pb-4 ${highContrast ? 'border-yellow-400' : 'border-gray-100'}`}>
+                                <span className={`material-symbols-outlined ${highContrast ? 'text-yellow-400' : 'text-primary'}`}>person</span>
+                                <h3 className={`text-lg font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>Informações Pessoais</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="col-span-1 md:col-span-2">
-                                    <label htmlFor="nome" className="block text-sm font-semibold text-gray-700 mb-2">Nome Completo <span className="text-red-500">*</span></label>
-                                    <input required id="nome" type="text" name="nome" autoComplete="new-password" value={formData.nome} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Ex: Maria Silva" />
+                                    <label htmlFor="nome" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Nome Completo <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                    <input required id="nome" type="text" name="nome" autoComplete="new-password" value={formData.nome} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400 placeholder-yellow-700' : 'border-gray-300 focus:border-primary focus:ring-primary'}`} placeholder="Ex: Maria Silva" />
                                 </div>
                                 <div>
-                                    <label htmlFor="cpf" className="block text-sm font-semibold text-gray-700 mb-2">CPF <span className="text-red-500">*</span></label>
-                                    <input required id="cpf" type="text" name="cpf" autoComplete="new-password" value={formData.cpf} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="000.000.000-00" />
+                                    <label htmlFor="cpf" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>CPF <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                    <input required id="cpf" type="text" name="cpf" autoComplete="new-password" value={formData.cpf} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400 placeholder-yellow-700' : 'border-gray-300 focus:border-primary focus:ring-primary'}`} placeholder="000.000.000-00" />
                                 </div>
                                 <div>
-                                    <label htmlFor="telefone" className="block text-sm font-semibold text-gray-700 mb-2">Telefone <span className="text-red-500">*</span></label>
-                                    <input required id="telefone" type="tel" name="telefone" autoComplete="off" readOnly onFocus={(e) => e.target.removeAttribute('readonly')} value={formData.telefone} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="(61) 90000-0000" />
+                                    <label htmlFor="telefone" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Telefone <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                    <input required id="telefone" type="tel" name="telefone" autoComplete="off" readOnly onFocus={(e) => e.target.removeAttribute('readonly')} value={formData.telefone} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400 placeholder-yellow-700' : 'border-gray-300 focus:border-primary focus:ring-primary'}`} placeholder="(61) 90000-0000" />
                                 </div>
                                 <div className="col-span-1 md:col-span-2">
-                                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">E-mail <span className="text-red-500">*</span></label>
-                                    <input required id="email" type="email" name="email" autoComplete="off" readOnly onFocus={(e) => e.target.removeAttribute('readonly')} value={formData.email} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="nome@email.com" />
+                                    <label htmlFor="email" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>E-mail <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                    <input required id="email" type="email" name="email" autoComplete="off" readOnly onFocus={(e) => e.target.removeAttribute('readonly')} value={formData.email} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400 placeholder-yellow-700' : 'border-gray-300 focus:border-primary focus:ring-primary'}`} placeholder="nome@email.com" />
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {/* 3. Report Details & Attachments - Context Aware */}
-                    <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-                        <div className="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
-                            <span className="material-symbols-outlined text-primary">
+                    <div className={`p-8 rounded-xl shadow-sm ${highContrast ? 'bg-black border border-yellow-400' : 'bg-white border border-gray-200'}`}>
+                        <div className={`flex items-center gap-2 mb-6 border-b pb-4 ${highContrast ? 'border-yellow-400' : 'border-gray-100'}`}>
+                            <span className={`material-symbols-outlined ${highContrast ? 'text-yellow-400' : 'text-primary'}`}>
                                 {initialChannel === 'TEXT' ? 'description' :
                                     initialChannel === 'AUDIO' ? 'mic' :
                                         initialChannel === 'VIDEO' ? 'videocam' : 'attach_file'}
                             </span>
-                            <h3 className="text-lg font-bold text-gray-900">
+                            <h3 className={`text-lg font-bold ${highContrast ? 'text-white' : 'text-gray-900'}`}>
                                 {initialChannel === 'TEXT' ? 'Conteúdo da Manifestação' : 'Conteúdo e Anexos'}
                             </h3>
                         </div>
 
                         {(initialChannel === 'AUDIO' || initialChannel === 'VIDEO' || initialChannel === 'UPLOAD') && (
                             <div className="mb-8">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>
                                     {initialChannel === 'AUDIO' && 'Grave seu relato'}
                                     {initialChannel === 'VIDEO' && 'Grave seu vídeo'}
                                     {initialChannel === 'UPLOAD' && 'Selecione o arquivo'}
@@ -455,7 +456,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                                     type="button"
                                                     onClick={isRecording ? stopRecording : startRecording}
                                                     aria-label={isRecording ? "Parar gravação" : "Iniciar gravação de áudio"}
-                                                    className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isRecording ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}
+                                                    className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${isRecording ? 'border-red-500 bg-red-50' : (highContrast ? 'border-yellow-400 bg-black hover:bg-gray-900 group' : 'border-gray-300 hover:border-primary hover:bg-gray-50')}`}
                                                 >
                                                     {isRecording ? (
                                                         <>
@@ -466,21 +467,21 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                            <div className={`size-12 rounded-full flex items-center justify-center ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400 group-hover:bg-yellow-400 group-hover:text-black transition-colors' : 'bg-blue-50 text-primary'}`}>
                                                                 <span className="material-symbols-outlined text-2xl">mic</span>
                                                             </div>
-                                                            <span className="text-sm font-medium text-gray-700">Gravar Agora</span>
+                                                            <span className={`text-sm font-medium ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Gravar Agora</span>
                                                         </>
                                                     )}
                                                 </button>
 
                                                 {!isRecording && (
-                                                    <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
+                                                    <label className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group ${highContrast ? 'border-yellow-400 bg-black hover:bg-gray-900' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}>
                                                         <input type="file" accept="audio/*" onChange={handleFileChange} className="hidden" />
-                                                        <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                        <div className={`size-12 rounded-full flex items-center justify-center ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400 group-hover:bg-yellow-400 group-hover:text-black transition-colors' : 'bg-blue-50 text-primary'}`}>
                                                             <span className="material-symbols-outlined text-2xl">folder_open</span>
                                                         </div>
-                                                        <span className="text-sm font-medium text-gray-700">Selecionar Arquivo</span>
+                                                        <span className={`text-sm font-medium ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Selecionar Arquivo</span>
                                                     </label>
                                                 )}
                                             </div>
@@ -493,20 +494,20 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                                         <button
                                                             type="button"
                                                             onClick={startCamera}
-                                                            className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all"
+                                                            className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group ${highContrast ? 'border-yellow-400 bg-black hover:bg-gray-900' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}
                                                         >
-                                                            <div className="size-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center">
+                                                            <div className={`size-12 rounded-full flex items-center justify-center ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400 group-hover:bg-yellow-400 group-hover:text-black transition-colors' : 'bg-red-50 text-red-500'}`}>
                                                                 <span className="material-symbols-outlined text-2xl">videocam</span>
                                                             </div>
-                                                            <span className="text-sm font-medium text-gray-700">Gravar Agora</span>
+                                                            <span className={`text-sm font-medium ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Gravar Agora</span>
                                                         </button>
 
-                                                        <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
+                                                        <label className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group ${highContrast ? 'border-yellow-400 bg-black hover:bg-gray-900' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}>
                                                             <input type="file" accept="video/*" onChange={handleFileChange} className="hidden" />
-                                                            <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                            <div className={`size-12 rounded-full flex items-center justify-center ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400 group-hover:bg-yellow-400 group-hover:text-black transition-colors' : 'bg-blue-50 text-primary'}`}>
                                                                 <span className="material-symbols-outlined text-2xl">folder_open</span>
                                                             </div>
-                                                            <span className="text-sm font-medium text-gray-700">Galeria / Arquivo</span>
+                                                            <span className={`text-sm font-medium ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Galeria / Arquivo</span>
                                                         </label>
                                                     </div>
                                                 ) : (
@@ -555,12 +556,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                         )}
 
                                         {initialChannel === 'UPLOAD' && (
-                                            <label className="w-full h-32 border-2 border-dashed border-gray-300 hover:border-primary hover:bg-gray-50 rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all">
+                                            <label className={`w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group ${highContrast ? 'border-yellow-400 bg-black hover:bg-gray-900' : 'border-gray-300 hover:border-primary hover:bg-gray-50'}`}>
                                                 <input type="file" accept="image/*,.pdf,.doc,.docx" onChange={handleFileChange} className="hidden" />
-                                                <div className="size-12 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                <div className={`size-12 rounded-full flex items-center justify-center ${highContrast ? 'bg-black border border-yellow-400 text-yellow-400 group-hover:bg-yellow-400 group-hover:text-black transition-colors' : 'bg-blue-50 text-primary'}`}>
                                                     <span className="material-symbols-outlined text-2xl">add_a_photo</span>
                                                 </div>
-                                                <span className="text-sm font-medium text-gray-700">Escolher Arquivo</span>
+                                                <span className={`text-sm font-medium ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Escolher Arquivo</span>
                                             </label>
                                         )}
                                     </div>
@@ -570,14 +571,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
-                                <label htmlFor="tipo_manifestacao" className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Manifestação <span className="text-red-500">*</span></label>
-                                <select id="tipo_manifestacao" name="tipo_manifestacao" value={formData.tipo_manifestacao} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
+                                <label htmlFor="tipo_manifestacao" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Tipo de Manifestação <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                <select id="tipo_manifestacao" name="tipo_manifestacao" value={formData.tipo_manifestacao} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400' : 'border-gray-300 focus:border-primary focus:ring-primary'}`}>
                                     {Object.values(TipoManifestacao).map(t => <option key={t} value={t}>{t}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label htmlFor="assunto" className="block text-sm font-semibold text-gray-700 mb-2">Assunto / Categoria <span className="text-red-500">*</span></label>
-                                <select id="assunto" name="assunto" required value={formData.assunto} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
+                                <label htmlFor="assunto" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Assunto / Categoria <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                <select id="assunto" name="assunto" required value={formData.assunto} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400' : 'border-gray-300 focus:border-primary focus:ring-primary'}`}>
                                     <option value="">Selecione...</option>
                                     <option value="Saúde">Saúde</option>
                                     <option value="Educação">Educação</option>
@@ -591,9 +592,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                         </div>
 
                         <div className="mb-6">
-                            <label htmlFor="conteudo_texto" className="block text-sm font-semibold text-gray-700 mb-2">
+                            <label htmlFor="conteudo_texto" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>
                                 {initialChannel === 'TEXT' ? 'Descrição do Ocorrido' : 'Observações Adicionais (Opcional)'}
-                                {initialChannel === 'TEXT' && <span className="text-red-500">*</span>}
+                                {initialChannel === 'TEXT' && <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span>}
                             </label>
                             <textarea
                                 id="conteudo_texto"
@@ -602,7 +603,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                                 value={formData.conteudo_texto}
                                 onChange={handleInputChange}
                                 rows={initialChannel === 'TEXT' ? 8 : 3}
-                                className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary"
+                                className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400 placeholder-yellow-700' : 'border-gray-300 focus:border-primary focus:ring-primary'}`}
                                 placeholder={
                                     initialChannel === 'TEXT'
                                         ? "Descreva detalhadamente o que aconteceu, quem estava envolvido e como podemos ajudar..."
@@ -612,20 +613,20 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                             {initialChannel === 'TEXT' && <p className="text-right text-xs text-gray-600 mt-1">Mínimo de detalhes ajuda na investigação.</p>}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg">
+                        <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 p-4 rounded-lg ${highContrast ? 'bg-black border border-yellow-400' : 'bg-gray-50'}`}>
                             <div>
-                                <label htmlFor="local_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Local do Fato <span className="text-red-500">*</span></label>
-                                <input id="local_ocorrencia" required type="text" name="local_ocorrencia" value={formData.local_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" placeholder="Rua, Bairro ou Ponto de Referência" />
+                                <label htmlFor="local_ocorrencia" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Local do Fato <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                <input id="local_ocorrencia" required type="text" name="local_ocorrencia" value={formData.local_ocorrencia} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400 placeholder-yellow-700' : 'border-gray-300 focus:border-primary focus:ring-primary'}`} placeholder="Rua, Bairro ou Ponto de Referência" />
                             </div>
                             <div>
-                                <label htmlFor="data_ocorrencia" className="block text-sm font-semibold text-gray-700 mb-2">Data do Ocorrido <span className="text-red-500">*</span></label>
-                                <input id="data_ocorrencia" required type="date" name="data_ocorrencia" value={formData.data_ocorrencia} onChange={handleInputChange} className="w-full rounded-lg border-gray-300 focus:border-primary focus:ring-primary" />
+                                <label htmlFor="data_ocorrencia" className={`block text-sm font-semibold mb-2 ${highContrast ? 'text-yellow-400' : 'text-gray-700'}`}>Data do Ocorrido <span className={`${highContrast ? 'text-yellow-400' : 'text-red-500'}`}>*</span></label>
+                                <input id="data_ocorrencia" required type="date" name="data_ocorrencia" value={formData.data_ocorrencia} onChange={handleInputChange} className={`w-full rounded-lg ${highContrast ? 'bg-black text-yellow-400 border-yellow-400 placeholder-yellow-700' : 'border-gray-300 focus:border-primary focus:ring-primary'}`} />
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <p className="text-xs text-gray-600 mt-3 text-center">Formatos aceitos: JPG, PNG, PDF, MP4, MP3, WebM. Max: 20MB.</p>
+                        <p className={`text-xs mt-3 text-center ${highContrast ? 'text-gray-400' : 'text-gray-600'}`}>Formatos aceitos: JPG, PNG, PDF, MP4, MP3, WebM. Max: 20MB.</p>
                     </div>
 
                     {error && (
@@ -636,10 +637,10 @@ const ReportForm: React.FC<ReportFormProps> = ({ onBack, initialType, initialCha
                     )}
 
                     <div className="flex items-center gap-4 pt-4">
-                        <button type="button" onClick={onBack} className="flex-1 py-4 border border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-colors">
+                        <button type="button" onClick={onBack} className={`flex-1 py-4 font-bold rounded-xl transition-colors ${highContrast ? 'border border-yellow-400 text-yellow-400 bg-black hover:bg-gray-900' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`}>
                             Cancelar
                         </button>
-                        <button type="submit" disabled={loading} className="flex-[2] py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <button type="submit" disabled={loading} className={`flex-[2] py-4 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${highContrast ? 'bg-yellow-400 text-black hover:bg-yellow-300' : 'bg-primary hover:bg-primary-dark text-white'}`}>
                             {loading ? (
                                 <>
                                     <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
