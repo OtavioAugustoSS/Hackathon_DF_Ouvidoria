@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, userStore, Manifestation } from '../services/userStore';
-import { settingsStore, AppSettings } from '../services/settingsStore';
+
 import { ToastType } from './Toast';
 
 interface AdminDashboardProps {
@@ -11,7 +11,7 @@ interface AdminDashboardProps {
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUser, showToast, highContrast = false }) => {
-    const [activeTab, setActiveTab] = useState<'manifestations' | 'attendants' | 'citizens' | 'configs'>('manifestations');
+    const [activeTab, setActiveTab] = useState<'manifestations' | 'attendants' | 'citizens'>('manifestations');
     const [selectedManifestation, setSelectedManifestation] = useState<Manifestation | null>(null);
     const [selectedCitizen, setSelectedCitizen] = useState<User | null>(null);
 
@@ -29,8 +29,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
     const [filterType, setFilterType] = useState('');
     const [filterLocation, setFilterLocation] = useState('');
 
-    // Settings State
-    const [currentSettings, setCurrentSettings] = useState<AppSettings>(settingsStore.getSettings());
+
 
     const manifestations = userStore.getManifestations();
     const attendants = userStore.getUsers().filter(u => u.role === 'attendant');
@@ -143,10 +142,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
         }
     };
 
-    const handleSaveSettings = () => {
-        settingsStore.updateSettings(currentSettings);
-        showToast('Configurações salvas com sucesso!', 'success');
-    };
+
 
     return (
         <div className={`min-h-screen flex ${highContrast ? 'bg-black' : 'bg-white'}`}>
@@ -185,13 +181,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                             </button>
                         </>
                     )}
-                    <button
-                        onClick={() => setActiveTab('configs')}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-bold text-sm ${activeTab === 'configs' ? (highContrast ? 'bg-yellow-400 text-black border-2 border-white' : 'bg-primary text-white shadow-lg shadow-primary/20') : (highContrast ? 'text-yellow-400 hover:bg-gray-900 hover:border-yellow-400 border border-transparent' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100')}`}
-                    >
-                        <span className="material-symbols-outlined">settings</span>
-                        Configurações
-                    </button>
+
                 </nav>
 
                 <div className={`p-6 border-t ${highContrast ? 'border-yellow-400' : 'border-gray-100'}`}>
@@ -213,7 +203,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                             {activeTab === 'manifestations' && 'Todas as Manifestações'}
                             {activeTab === 'attendants' && 'Gestão de Atendentes'}
                             {activeTab === 'citizens' && 'Base de Cidadãos'}
-                            {activeTab === 'configs' && 'Configurações do Sistema'}
+
                         </h1>
                         <p className={`font-medium ${highContrast ? 'text-yellow-400' : 'text-gray-500'}`}>Bem-vindo, {authenticatedUser.name}</p>
                     </div>
@@ -589,118 +579,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack, authenticatedUs
                     </div>
                 )}
 
-                {activeTab === 'configs' && (
-                    <div className="max-w-4xl space-y-8 animate-fade-in pb-20">
-                        {/* Branding Category */}
-                        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="px-8 py-6 bg-gray-50 border-b border-gray-100">
-                                <h3 className="font-black text-gray-900 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-primary">palette</span>
-                                    Visual e Branding
-                                </h3>
-                            </div>
-                            <div className="p-8 space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Nome do Portal</label>
-                                        <input
-                                            type="text"
-                                            value={currentSettings.portalName}
-                                            onChange={(e) => setCurrentSettings({ ...currentSettings, portalName: e.target.value })}
-                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-primary transition-all font-medium"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Cor Principal</label>
-                                        <div className="flex gap-2">
-                                            <input
-                                                type="color"
-                                                value={currentSettings.primaryColor}
-                                                onChange={(e) => setCurrentSettings({ ...currentSettings, primaryColor: e.target.value })}
-                                                className="size-11 rounded-lg border-2 border-white shadow-sm cursor-pointer overflow-hidden p-0"
-                                            />
-                                            <input
-                                                type="text"
-                                                value={currentSettings.primaryColor}
-                                                readOnly
-                                                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono text-gray-500"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Rules Category */}
-                        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="px-8 py-6 bg-gray-50 border-b border-gray-100">
-                                <h3 className="font-black text-gray-900 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-primary">gavel</span>
-                                    Regras e Segurança
-                                </h3>
-                            </div>
-                            <div className="p-8 space-y-6">
-                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                                    <div>
-                                        <p className="font-bold text-gray-900">Permitir Manifestações Anônimas</p>
-                                        <p className="text-xs text-gray-500">Cidadãos podem enviar relatos sem identificação prévia</p>
-                                    </div>
-                                    <button
-                                        onClick={() => setCurrentSettings({ ...currentSettings, allowAnonymous: !currentSettings.allowAnonymous })}
-                                        className={`size-12 rounded-xl flex items-center justify-center transition-all ${currentSettings.allowAnonymous ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-gray-200 text-gray-400'}`}
-                                    >
-                                        <span className="material-symbols-outlined">{currentSettings.allowAnonymous ? 'check' : 'close'}</span>
-                                    </button>
-                                </div>
-
-                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                                    <div>
-                                        <p className="font-bold text-gray-900">Prazo de Resposta (SLA)</p>
-                                        <p className="text-xs text-gray-500">Número máximo de dias para resposta oficial</p>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <input
-                                            type="number"
-                                            value={currentSettings.slaDays}
-                                            onChange={(e) => setCurrentSettings({ ...currentSettings, slaDays: parseInt(e.target.value) || 0 })}
-                                            className="w-20 bg-white border border-gray-200 rounded-xl px-3 py-2 text-center font-bold text-primary"
-                                        />
-                                        <span className="text-sm font-bold text-gray-400">dias</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Danger Zone */}
-                        <div className="bg-red-50 rounded-3xl border border-red-100 p-8 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="size-12 bg-red-100 rounded-2xl flex items-center justify-center text-red-600">
-                                    <span className="material-symbols-outlined">running_with_errors</span>
-                                </div>
-                                <div>
-                                    <h4 className="font-black text-red-900 uppercase tracking-tight">Modo de Manutenção</h4>
-                                    <p className="text-sm text-red-700/70">Bloqueia o acesso de todos os cidadãos ao portal.</p>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setCurrentSettings({ ...currentSettings, maintenanceMode: !currentSettings.maintenanceMode })}
-                                className={`px-6 py-3 rounded-xl font-bold transition-all ${currentSettings.maintenanceMode ? 'bg-red-600 text-white' : 'bg-white border border-red-200 text-red-600 hover:bg-red-100'}`}
-                            >
-                                {currentSettings.maintenanceMode ? 'Desativar Manutenção' : 'Ativar Agora'}
-                            </button>
-                        </div>
-
-                        <div className="flex justify-end pt-4">
-                            <button
-                                onClick={handleSaveSettings}
-                                className="px-10 py-4 bg-primary text-white font-black rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
-                            >
-                                <span className="material-symbols-outlined">save</span>
-                                Salvar Configurações
-                            </button>
-                        </div>
-                    </div>
-                )}
             </main>
 
             {/* Manifestation Detail View (Admin) */}

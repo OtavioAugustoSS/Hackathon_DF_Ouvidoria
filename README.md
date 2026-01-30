@@ -10,8 +10,8 @@ Bem-vindo ao repositório da solução desenvolvida para a categoria **Ouvidoria
 Prezamos pela simplicidade de execução. Siga os passos abaixo para rodar toda a aplicação (Frontend + Backend) com poucos comandos.
 
 ### Pré-requisitos
-- **Node.js** (versão 18+ recomendada)
-- **Python** (versão 3.9+ recomendada)
+- **Node.js**: Versão 18 ou superior.
+- **Python**: Versão 3.9 ou superior.
 
 ### Passo a Passo
 
